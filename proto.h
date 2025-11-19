@@ -17,6 +17,8 @@ typedef enum {
   MARK = 2,
 } EtatCase;
 
+char	*choose_path(int i);
+int	fill_my_struct(char *path, Grille g);
 
 #endif //PROTO_H
 
