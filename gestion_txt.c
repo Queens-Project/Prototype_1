@@ -21,6 +21,12 @@ int	lectureTaille(FILE *f, Grille *g)
 		fprintf(stderr, "Format incorrect : taille manquante\n");
 		return (0);
 	}
+
+	if (g->taille < 5 || g->taille > N)
+	{
+		fprintf(stderr, "Taille invalide (%d). La taille doit être entre 5 et %d.\n", g->taille, N);
+		return (0);
+	}
 	return (1);
 }
 
@@ -44,6 +50,7 @@ int	lectureGrille(FILE *f, Grille *g)
 			g->etat[i][j] = VIDE;
 		}
 	}
+	return (1);
 }
 
 
@@ -86,11 +93,12 @@ int lireGrilleFromFichier(const char *nomFichier, Grille *g)
 // }
 
 
+/*autre main de test*/
 int main(void)
 {
 	Grille g;
 
-	if (!lireGrilleFromFichier("8_1.txt", &g)) {
+	if (!lireGrilleFromFichier("8_01.txt", &g)) {
 		fprintf(stderr, "Erreur lors de la lecture de la grille.\n");
 		return 1;
 	}
@@ -100,12 +108,9 @@ int main(void)
 	curs_set(0);
 
 	init_colors_cases();
+	game_loop(&g);
 
 
-	afficherGrilleNcurses(&g, 0, 0);
-
-	refresh();
-	getch();       // attendre une touche
 	endwin();
 
 	return (0);

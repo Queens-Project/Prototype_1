@@ -1,79 +1,139 @@
 #include "proto.h"
 
-/*Check que les huit cases autour soient libre*/
-int	check_adjacent(int col, int line, Grille g)
+/*Rappel des règles du Cahier des Charges
+** - pas de reine adjacente (8cases autour)
+** - une reine par ligne
+** - une reine par colonne
+** - une reine par région
+*/
+
+int	inside_grille(Grille *g, int line, int col)
 {
-	//check les 3 cases au dessus du placement
-	if (g.etat[line-1][col-1] == 1)
-		return (0);//il y a déjà une reine
-	if (g.etat[line-1][col] == 1)
-		return (0);
-	if (g.etat[line-1][col+1] == 1)
-		return (0);
-
-	//check les cases à droite et à gauche du placement
-	if (g.etat[line][col-1] == 1)
-		return (0);
-	if (g.etat[line+1][col+1] == 1)
-		return (0);
-
-	//check les 3 cases en dessous du placement
-	if (g.etat[line+1][col-1] == 1)
-		return (0);
-	if (g.etat[line+1][col] == 1)
-		return (0);
-	if (g.etat[line+1][col+1] == 1)
-		return ();
-
-	return (1); //Check OK
+	return (g && line>=0 && col>=0 && line<g->taille && col < g->taille);
 }
 
-
-/*Check qu'il n'y ai pas déjà une reine placée dans la région*/
-int	check_region(int col, int line, Grille g)
+/* Check que les 8 cases adjacentes ne contiennent 
+pas de reine. Si OK alors renvoie 1, 0 sinon.*/
+int	check_adjacent(int col, int line, Grille *g)
 {
-	for (int i=0; i<g.taille; i++)
+	if (!inside_grille(g, line, col))
+		return (0);
+
+	for (int dl=-1; dl<=1; dl++)
 	{
-		for (int j=0; j<g.taille; j++)
+		for (int dc=-1; dc<=1; dc++)
 		{
-			if (g.region[i][j] == g.region[line][col] && (i!=line || j!=col)) //Si on se trouve dans la même région
-				if (g.etat[i][j] == QUEEN) //Si il y a une autre reine
-					return (0);//il y a déjà une reine
+			if (dl!=0 || dc!=0)
+			{
+				int	nl = line + dl;
+				int nc = col + dc;
+				if (inside_grille(g, nl, nc))
+				{
+					if (g->etat[nl][nc] == QUEEN)
+						return (0);
+				}
+			}
 		}
 	}
-	return (1) //Check OK
+	return (1);
 }
 
 
-/*Check qu'il n'y ai pas déjà une reine sur la même ligne*/
-int	check_line(int col, int line, Grille g)
+/* Check qu'il n'y ait pas déjà une reine 
+placée dans la même région*/
+int	check_region(int col, int line, Grille *g)
 {
-	for (int i=col-1; i==0; i--)
+	if (!inside_grille(g, line, col))
+		return (0);
+	
+	int	region_id = g->regions[line][col];
+
+	for (int i=0; i<g->taille; i++)
 	{
-		if (g.etat[line][i] == 1)
-			return (0); 
+		for (int j=0; j<g->taille; j++)
+		{
+			if (i!=line || j!=col)
+			{
+				if (g->regions[i][j] == region_id && g->etat[i][j] == QUEEN)
+					return (0);
+			}
+		}
 	}
-	for (int i=col+1; i<g.taille; i++)
-	{
-		if (g.etat[line][i] == 1)
-			return (0);
-	}
-	return (1);//Check OK
+	return (1);
 }
 
 
-/*Check qu'il n'y ai pas déjà une reine sur la même colonne*/
-int	check_column(int col, int line, Grille g)
+/* Check qu'il n'y a pas déjà une reine sur la même ligne*/
+int	check_line(int col, int line, Grille *g)
 {
-	for (int i=line-1; i==0; i--)
+	if (!inside_grille(g, line, col))
+		return (0);
+	
+	for (int j=0; j<g->taille; j++)
 	{
-		if (g.etat[i][col] == 1)
-			return (0);
+		if (j != col)
+		{
+			if (g->etat[line][j] == QUEEN)
+				return (0);
+		}
 	}
-	for (int i=line+1; i<g.taille; i++)
-	{
-		if (g.etat[i][col] == 1)
-			return (0);
-	}
-	return (1);//Check OK
+	return (1);
 }
+
+
+/* Check qu'il n'y ait ^pas déjà une reine sur la même colonne. */
+int	check_column(int col, int line, Grille *g)
+{
+	if (!inside_grille(g, line, col))
+		return (0);
+	
+	for (int i=0; i<g->taille; i++)
+	{
+		if (i != line)
+		{
+			if (g->etat[i][col] == QUEEN)
+				return (0);
+		}
+	}
+	return (1);
+}
+
+
+/* Utilise les fonctions précédentes pour déterminer si une reine peut être placée. */
+QueenError placement_queen(int col, int line, Grille *g)
+{
+	if (!inside_grille(g, line, col))
+		return ERROR_OUT_OF_BOUNDS;
+
+	if (g->etat[line][col] == QUEEN)
+		return ERROR_OCCUPIED;
+
+	if (!check_adjacent(col, line, g))
+		return ERROR_ADJACENT;
+
+	if (!check_line(col, line, g))
+		return ERROR_LINE;
+
+	if (!check_column(col, line, g))
+		return ERROR_COLUMN;
+
+	if (!check_region(col, line, g))
+		return ERROR_REGION;
+
+	return PLACEMENT_OK;
+}
+
+
+
+// /*Affichage du message de placement*/
+// const char *queen_error_str(QueenError err)
+// {
+// 	if (err == ERROR_NONE)        return "Placement valide";
+// 	if (err == ERROR_OUT_OF_BOUNDS) return "Hors de la grille";
+// 	if (err == ERROR_OCCUPIED)    return "Case deja occupee";
+// 	if (err == ERROR_ADJACENT)    return "Reine adjacente";
+// 	if (err == ERROR_LINE)        return "Reine deja sur la ligne";
+// 	if (err == ERROR_COLUMN)     return "Reine deja sur la colonne";
+// 	if (err == ERROR_REGION)     return "Reine deja dans la region";
+// 	return "Erreur inconnue";
+// }
