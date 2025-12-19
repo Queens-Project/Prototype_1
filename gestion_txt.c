@@ -94,24 +94,24 @@ int lireGrilleFromFichier(const char *nomFichier, Grille *g)
 
 
 /*autre main de test*/
-int main(void)
-{
-	Grille g;
+// int main(void)
+// {
+// 	Grille g;
 
-	if (!lireGrilleFromFichier("8_01.txt", &g)) {
-		fprintf(stderr, "Erreur lors de la lecture de la grille.\n");
-		return 1;
-	}
+// 	if (!lireGrilleFromFichier("8_01.txt", &g)) {
+// 		fprintf(stderr, "Erreur lors de la lecture de la grille.\n");
+// 		return 1;
+// 	}
 
-	initscr();
-	noecho();
-	curs_set(0);
+// 	initscr();
+// 	noecho();
+// 	curs_set(0);
 
-	init_colors_cases();
-	game_loop(&g);
+// 	init_colors_cases();
+// 	game_loop(&g);
 
 
-	endwin();
+// 	endwin();
 
-	return (0);
-}
+// 	return (0);
+// }
