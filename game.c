@@ -66,7 +66,7 @@ QueenError	placer_marque(Grille *g, int line, int col)
 
 
 
-int	game_loop(Grille *g)
+int	game_loop(Grille *g, time_t debut)
 {
 	int	running = 1;
 	int	line = 0;
@@ -79,10 +79,33 @@ int	game_loop(Grille *g)
 		clear();
 		afficherGrilleNcurses(g, line, col);
 
-		mvprintw(g->taille+1, 0, "Fleches: bouger | Espace/Entree: Reine | X: marque | Q: quitter");
+		int	rows, cols;
+		getmaxyx(stdscr, rows, cols);
+
+		int	elapsed = (int)(time(NULL) - debut);
+		int	mm = elapsed / 60;
+		int	ss = elapsed % 60;
+
+		char	buf[32];
+		snprintf(buf, sizeof(buf), "%02d:%02d", mm, ss);
+
+		int	x = cols - (int)strlen(buf) - 70;
+		if (x < 0)
+			x = 0;
+
+		attrset(A_NORMAL);
+		attron(A_REVERSE | A_BOLD);
+
+		int	rc = mvprintw(0, x, "%s", buf);
+
+		attroff(A_REVERSE | A_BOLD);
+		attrset(A_NORMAL);
+
+		mvprintw(g->taille+1, 0,
+             "Fleches: bouger | Espace/Entree: Reine | X: marque | Q: quitter");
 
 		refresh();
-		int ch = getch();
+		int	ch = getch();
 
 		if (ch == 'q' || ch == 'Q')
 			running = 0;
