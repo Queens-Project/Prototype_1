@@ -7,13 +7,6 @@
 #include <assert.h>
 #include "proto.h"
 
-
-
-void	load_game()
-{
-	printf("Game loaded\n");
-}
-
 int	choisir_taille_grille(void){
 	int	taille = 5;
 	int	ch;
@@ -78,38 +71,46 @@ void	crea_pseudo()
 
 void	regles_du_jeu()
 {
-		FILE	*f = fopen("regle_du_jeu.txt", "r");
-		char	line[256];
+    FILE *f = fopen("regle_du_jeu.txt", "r");
+    char line[256];
+    int y = 0;
+    int tap = 0;
 
-		int y = 0;
-		int tap = 0;
+    clear();
+	flushinp();
+
+    if (!f)
+    {
+        mvprintw(0, 0, "Erreur d'ouverture du fichier regle_du_jeu.txt");
+        mvprintw(2, 0, "Appuyez sur une touche pour revenir");
+        refresh();
+        getch();
+        return;
+    }
+
+    int rows, cols;
+    getmaxyx(stdscr, rows, cols);
+
+    while (fgets(line, sizeof(line), f) && y < rows - 2)
+    {
+        mvprintw(y++, 0, "%s", line);
+    }
+
+    fclose(f);
+
+    mvprintw(y + 1, 0, "Appuyez sur Q pour revenir au menu");
+    refresh();
+
+    while ((tap = getch()) != 'q' && tap != 'Q')
+        ;
+
+	if (tap == 'q' || tap == 'Q')
+	{
 		clear();
-
-		if (!f)
-		{
-			mvprintw(0, 0, "Erreur d'ouverture du fichier regles.txt");
-			mvprintw(2, 0, "Appuyez sur une touche pour revenir");
-			refresh();
-			getch();
-			return;
-		}
-
-		while (fgets(line, sizeof(line), f))
-		{
-			mvprintw(y++, 0, "%s", line);
-		}
-		fclose(f);
-		mvprintw(y + 2, 0, "Appuyez sur Q pour revenir au menu");
 		refresh();
-		while (tap != 'q' && tap != 'Q')
-		{
-			tap = getch();
-		}
-		if(tap=='q' || tap=='Q'){
-			clear();
-			refresh();
-		}
+	}
 }
+
 
 void	menu()
 {
@@ -125,10 +126,9 @@ void	menu()
 		clear();
 		mvprintw(0,0,"=== MENU PRINCIPAL ===");
 		mvprintw(2,0,"(N) Nouvelle Partie");
-		mvprintw(3,0,"(C) Charger une Partie");
-		mvprintw(4,0,"(S) Afficher les Scores");
-		mvprintw(5,0,"(R) Règles du Jeu");
-		mvprintw(6,0,"(Q) Quitter");
+		mvprintw(3,0,"(S) Afficher les Scores");
+		mvprintw(4,0,"(R) Règles du Jeu");
+		mvprintw(5,0,"(Q) Quitter");
 		refresh();
 
 		tap = getch();
@@ -141,13 +141,6 @@ void	menu()
 				clear();
 				refresh();
 				crea_pseudo();
-			}
-			else if (tap=='c' || tap=='C')
-			{
-				running = 0;
-				clear();
-				refresh();
-				load_game();
 			}
 			else if(tap=='s' || tap=='S')
 			{

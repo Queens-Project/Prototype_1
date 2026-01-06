@@ -188,13 +188,42 @@ void	lancer_partie(const char *pseudo)
 
 	// lancement de la boucle de jeu & du temps
 	time_t debut = time(NULL);
-	game_loop(&g, debut);
-	time_t fin = time(NULL);
 
 	// si victoire alors on enregistre le score
 	if (game_loop(&g, debut) == 1)
 	{
+		time_t fin = time(NULL);
 		int temps = (int)(fin - debut);
 		update_scores(pseudo, temps);
 	}
+	
+
+	
+}
+
+void afficher_scores_in_game(Grille *g)
+{
+	FILE	*f = fopen("score.txt", "r");
+	char	line[256];
+	int	y = g->taille + 6;
+	int	tap;
+
+	flushinp();
+
+	if (!f)
+	{
+		mvprintw(g->taille + 5, 0, "Erreur d'ouverture du fichier score.txt");
+		refresh();
+		getch();
+		return;
+	}
+
+	mvprintw(g->taille + 5, 0, "=== SCORES ===");
+
+	while (fgets(line, sizeof(line), f))
+	{
+		mvprintw(y++, 0, "%s", line);
+	}
+
+	fclose(f);
 }
