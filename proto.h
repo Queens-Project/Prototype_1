@@ -5,11 +5,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
+#include <assert.h>
+#include <time.h>
+#include <string.h>
 
 
 #define N 8
 
+//sructures kilian
+typedef struct {
+    char pseudo[25];
+    int temps;
+} Score;
 
+// structures clem
 typedef enum {
 	VIDE = 0,
 	QUEEN = 1,
@@ -44,12 +53,30 @@ int	validation(Grille *g);
 
 void init_colors_cases(void);
 void afficherGrilleNcurses(const Grille *g, int x, int y);
+void afficherGrilleBlanche(const Grille *g);
 
-int	game_loop(Grille *g);
+int game_loop(Grille *g, time_t *debut);
 QueenError	placer_queen(Grille *g, int line, int col);
 QueenError	placer_marque(Grille *g, int line, int col);
 const char	*queen_error_msg(QueenError err);
 
 int load_random_grid_for_size(int taille, Grille *g);
+int lireGrilleFromFichier(const char *nomFichier, Grille *g);
+
+
+// partie kilian
+void menu();
+void crea_pseudo();
+void load_game();
+void afficher_scores();
+void regles_du_jeu();
+int choisir_taille_grille(void);
+void lancer_partie(const char *pseudo);
+
+void update_scores(const char *pseudo, int temps);
+int load_scores(Score scores[]);
+void add_score(Score scores[], int *count, const char *pseudo, int temps);
+void sort_scores(Score scores[], int n);
+void save_scores(Score scores[], int count);
 
 #endif //PROTO_H

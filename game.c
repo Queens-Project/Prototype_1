@@ -66,11 +66,12 @@ QueenError	placer_marque(Grille *g, int line, int col)
 
 
 
-int	game_loop(Grille *g)
+int	game_loop(Grille *g, time_t *debut)
 {
 	int	running = 1;
 	int	line = 0;
 	int	col = 0;
+	
 
 	keypad(stdscr, TRUE);
 
@@ -79,13 +80,81 @@ int	game_loop(Grille *g)
 		clear();
 		afficherGrilleNcurses(g, line, col);
 
-		mvprintw(g->taille+1, 0, "Fleches: bouger | Espace/Entree: Reine | X: marque | Q: quitter");
+		int	rows, cols;
+		getmaxyx(stdscr, rows, cols);
+
+		int elapsed = (int)(time(NULL) - *debut);
+		int	mm = elapsed / 60;
+		int	ss = elapsed % 60;
+
+		char	buf[32];
+		snprintf(buf, sizeof(buf), "%02d:%02d", mm, ss);
+
+		int	x = cols - (int)strlen(buf) - 70;
+		if (x < 0)
+			x = 0;
+
+		attrset(A_NORMAL);
+		attron(A_REVERSE | A_BOLD);
+
+		int	rc = mvprintw(0, x, "%s", buf);
+
+		attroff(A_REVERSE | A_BOLD);
+		attrset(A_NORMAL);
+
+		mvprintw(g->taille+1, 0,
+             "Fleches: bouger | Espace/Entree: Reine | X: marque | Q: quitter");
 
 		refresh();
-		int ch = getch();
+		int	ch = getch();
 
 		if (ch == 'q' || ch == 'Q')
-			running = 0;
+			return 0;
+
+		/* --- PAUSE --- */
+		else if (ch == 'p' || ch == 'P')
+		{
+			/* On fige le temps et on masque la grille */
+			time_t pause_start = time(NULL);
+			int elapsed_frozen = (int)(pause_start - *debut);
+
+			while (1)
+			{
+				clear();
+				afficherGrilleBlanche(g);
+
+				int rows2, cols2;
+				getmaxyx(stdscr, rows2, cols2);
+
+				int mm2 = elapsed_frozen / 60;
+				int ss2 = elapsed_frozen % 60;
+				char buf2[32];
+				snprintf(buf2, sizeof(buf2), "%02d:%02d", mm2, ss2);
+
+				int x2 = cols2 - (int)strlen(buf2) - 70;
+				if (x2 < 0) x2 = 0;
+
+				attrset(A_NORMAL);
+				attron(A_REVERSE | A_BOLD);
+				mvprintw(0, x2, "%s", buf2);
+				attroff(A_REVERSE | A_BOLD);
+				attrset(A_NORMAL);
+
+				mvprintw(g->taille + 1, 0, "=== PAUSE ===  P: reprendre | Q: quitter");
+				refresh();
+
+				int chp = getch();
+				if (chp == 'q' || chp == 'Q')
+					return 0;
+				if (chp == 'p' || chp == 'P')
+					break;
+			}
+
+			/* On decale le debut pour exclure la duree de pause */
+			*debut += (time(NULL) - pause_start);
+			continue;
+		}
+
 
 		else if (ch == KEY_UP && line>0)
 			line--;
@@ -128,7 +197,7 @@ int	game_loop(Grille *g)
 					mvprintw(g->taille+3, 0, "VICTOIRE ! Appuie sur une touche...");
 					refresh();
 					getch();
-					running = 0;
+					return 1;
 				}
 			}
 		}
