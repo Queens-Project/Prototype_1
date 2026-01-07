@@ -69,51 +69,99 @@ void	crea_pseudo()
 
 
 
-void	regles_du_jeu()
+#include <ncurses.h>
+#include <string.h>
+#include <locale.h>
+
+static void strip_crlf(char *s)
+{
+    /* Supprime \r et \n (CRLF Windows ou LF Linux) */
+    s[strcspn(s, "\r\n")] = '\0';
+}
+
+void regles_du_jeu(void)
 {
     FILE *f = fopen("regle_du_jeu.txt", "r");
-    char line[256];
-    int y = 0;
-    int tap = 0;
+    int rows, cols;
+    char line[512];
 
     clear();
-	flushinp();
+    refresh();
+    flushinp();
+
+    getmaxyx(stdscr, rows, cols);
 
     if (!f)
     {
         mvprintw(0, 0, "Erreur d'ouverture du fichier regle_du_jeu.txt");
-        mvprintw(2, 0, "Appuyez sur une touche pour revenir");
+        mvprintw(2, 0, "Appuyez sur une touche pour revenir...");
         refresh();
         getch();
         return;
     }
 
-    int rows, cols;
-    getmaxyx(stdscr, rows, cols);
-
-    while (fgets(line, sizeof(line), f) && y < rows - 2)
+    /* Terminal trop petit : message clair */
+    if (rows < 6 || cols < 30)
     {
-        mvprintw(y++, 0, "%s", line);
+        mvprintw(0, 0, "Fenetre trop petite (%dx%d). Agrandissez le terminal.", rows, cols);
+        mvprintw(2, 0, "Appuyez sur une touche pour revenir...");
+        refresh();
+        getch();
+        fclose(f);
+        return;
+    }
+
+    /* Évite les artefacts : on part d'un écran propre */
+    erase();
+    refresh();
+
+    /* Autorise le scroll si le texte dépasse */
+    scrollok(stdscr, TRUE);
+    idlok(stdscr, TRUE);      /* permet à ncurses d'optimiser le scroll */
+
+    int max_text_rows = rows - 2;   /* dernière ligne réservée au prompt */
+    int y = 0;
+
+    while (fgets(line, sizeof(line), f))
+    {
+        strip_crlf(line);
+
+        /* Si la ligne est plus longue que l'écran, on la tronque proprement */
+        if ((int)strlen(line) > cols - 1)
+            line[cols - 1] = '\0';
+
+        /* Si on arrive en bas, on scrolle automatiquement */
+        if (y >= max_text_rows)
+        {
+            scroll(stdscr);
+            y = max_text_rows - 1;
+            move(y, 0);
+            clrtoeol();
+        }
+
+        move(y, 0);
+        clrtoeol();                 /* IMPORTANT : supprime les restes d'une ancienne ligne plus longue */
+        printw("%s", line);
+        y++;
     }
 
     fclose(f);
 
-    mvprintw(y + 1, 0, "Appuyez sur Q pour revenir au menu");
+    /* Ligne d'aide en bas */
+    move(rows - 1, 0);
+    clrtoeol();
+    mvprintw(rows - 1, 0, "Appuyez sur Q pour revenir au menu");
     refresh();
 
-    while ((tap = getch()) != 'q' && tap != 'Q')
-        ;
-
-	if (tap == 'q' || tap == 'Q')
-	{
-		clear();
-		refresh();
-	}
+    int ch;
+    while ((ch = getch()) != 'q' && ch != 'Q') { }
 }
+
 
 
 void	menu()
 {
+	setlocale(LC_ALL, "");
 	initscr();
 	cbreak();
 	noecho();

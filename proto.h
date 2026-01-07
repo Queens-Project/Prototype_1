@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <time.h>
 #include <string.h>
+#include <locale.h>
 
 
 #define N 8
