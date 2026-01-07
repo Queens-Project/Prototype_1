@@ -6,105 +6,85 @@
 #include <ctype.h>
 #include <assert.h>
 #include "proto.h"
-#define MAX_SCORES 15
+#define MAX_SCORES 45
 
-void	afficher_scores()
+void afficher_scores()
 {
-	FILE	*f = fopen("score.txt", "r");
-	char	line[256];
+    FILE *f = fopen("score.txt", "r");
+    int y = 0;
+    int tap = 0;
 
-	int	y = 0;
-	int	tap = 0;
+    clear();
 
-	clear();
+    if (!f)
+    {
+        mvprintw(0, 0, "Erreur d'ouverture du fichier score.txt");
+        refresh();
+        getch();
+        return;
+    }
 
-	if (!f)
-	{
-		mvprintw(0, 0, "Erreur d'ouverture du fichier score.txt");
-		mvprintw(2, 0, "Appuyez sur une touche pour revenir");
-		refresh();
-		getch();
-		return;
-	}
+    mvprintw(y++, 0, "=== SCORES ===");
+    y++;
 
-	mvprintw(y++, 0, "=== SCORES ===");
-	y++;
+    int rank, taille, minutes, secondes;
+    char pseudo[25];
 
-	while (fgets(line, sizeof(line), f))
-	{
-		char	*p = line;
-		int	rank, minutes, secondes;
-		char	pseudo[25];
-		pseudo[0] = '\0';
+    while (fscanf(f, "%d %24s %d %d %d",
+                   &rank,
+                   pseudo,
+                   &taille,
+                   &minutes,
+                   &secondes) == 5)
+    {
+        mvprintw(y++, 0,
+                 "%d. %-10s | %dX%d | %d:%02d",
+                 rank,
+                 pseudo,
+                 taille,
+                 taille,
+                 minutes,
+                 secondes);
+    }
 
-		// --- Récupération du rang ---
-		while (*p && !isdigit(*p))
-			p++;
-		rank = atoi(p);
-		while (*p && isdigit(*p))
-			p++;
+    fclose(f);
 
-		// --- Récupération du nom ---
-		while (*p && !isalpha(*p))
-			p++;
-		while (*p && (isalpha(*p) || *p == '_'))
-		{
-			strncat(pseudo, p, 1);
-			p++;
-		}
+    mvprintw(y + 2, 0, "Appuyez sur Q pour revenir");
+    refresh();
 
+    while (tap != 'q' && tap != 'Q')
+        tap = getch();
 
-		// --- Récupération des minutes ---
-		while (*p && !isdigit(*p))
-			p++;
-		minutes = atoi(p);
-		while (*p && isdigit(*p))
-			p++;
-
-		// --- Récupération des secondes ---
-		while (*p && !isdigit(*p))
-			p++;
-		secondes = atoi(p);
-
-		// --- Affichage ncurses ---
-		mvprintw(y++, 0,
-                 "%d. %-10s %d min %02d sec",
-                 rank, pseudo, minutes, secondes);
-	}
-
-	fclose(f);
-
-	mvprintw(y + 2, 0, "Appuyez sur Q pour revenir au menu");
-	refresh();
-
-	while (tap != 'q' && tap != 'Q')
-	{
-		tap = getch();
-	}
-	if(tap=='q' || tap=='Q'){
-		clear();
-		refresh();
-	}
+    clear();
+    refresh();
 }
 
 
-int	load_scores(Score scores[])
+int load_scores(Score scores[])
 {
-	FILE	*f = fopen("score.txt", "r");
-	if (!f) return 0;
+    FILE *f = fopen("score.txt", "r");
+    if (!f) return 0;
 
-	int	count = 0, rank, min, sec;
-	char	pseudo[25];
+    int count = 0;
+    int rank, min, sec, taille;
+    char pseudo[25];
 
-	while (count < MAX_SCORES && fscanf(f, "%d. %24s %d min %d sec", &rank, pseudo, &min, &sec) == 4)
-	{
-		strcpy(scores[count].pseudo, pseudo);
-		scores[count].temps = min * 60 + sec;
-		count++;
-	}
+    while (count < MAX_SCORES &&
+           fscanf(f, "%d %24s %d %d %d",
+                  &rank,
+                  pseudo,
+                  &taille,
+                  &min,
+                  &sec) == 5)
+    {
+        strcpy(scores[count].pseudo, pseudo);
+        scores[count].taille = taille;
+        scores[count].temps = min * 60 + sec;
+        count++;
+    }
 
-	fclose(f);
-	return count;
+    fclose(f);
+    return count;
 }
 
 
@@ -128,38 +108,45 @@ void	sort_scores(Score scores[], int n)
 			}
 }
 
-
-void	save_scores(Score scores[], int count)
+void save_scores(Score scores[], int count, int taille)
 {
-	FILE	*f = fopen("score.txt", "w");
-	if (!f)
-		return;
+    FILE *f = fopen("score.txt", "w");
+    if (!f)
+        return;
 
-	for (int i = 0; i < count; i++) {
-		fprintf(f, "%d. %s %d min %d sec\n",
-                i + 1,
-                scores[i].pseudo,
-                scores[i].temps / 60,
-                scores[i].temps % 60);
-	}
+    for (int i = 0; i < count; i++)
+    {
+        fprintf(f, "%d %s %d %d %d\n",
+            i + 1,
+            scores[i].pseudo,
+            scores[i].taille,
+            scores[i].temps / 60,
+            scores[i].temps % 60
+        );
+    }
 
-	fclose(f);
+    fclose(f);
 }
 
 
-void	update_scores(const char *pseudo, int temps)
+void update_scores(const char *pseudo, int temps, int taille)
 {
-	Score scores[MAX_SCORES + 1];
-	int count = load_scores(scores);
+    Score scores[MAX_SCORES + 1];
+    int count = load_scores(scores);
 
-	add_score(scores, &count, pseudo, temps);
-	sort_scores(scores, count);
+    strcpy(scores[count].pseudo, pseudo);
+    scores[count].temps = temps;
+    scores[count].taille = taille;
+    count++;
 
-	if (count > MAX_SCORES)
-		count = MAX_SCORES;
+    sort_scores(scores, count);
 
-	save_scores(scores, count);
+    if (count > MAX_SCORES)
+        count = MAX_SCORES;
+
+    save_scores(scores, count, taille);
 }
+
 
 
 void	lancer_partie(const char *pseudo)
@@ -194,7 +181,8 @@ void	lancer_partie(const char *pseudo)
 	{
 		time_t fin = time(NULL);
 		int temps = (int)(fin - debut);
-		update_scores(pseudo, temps);
+		update_scores(pseudo, temps, g.taille);
+		afficher_scores_in_game(&g);
 	}
 	
 

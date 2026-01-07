@@ -1,5 +1,6 @@
-1. kik 0 min 4 sec
-2. kik 0 min 26 sec
-3. kiki 0 min 27 sec
-4. kik 0 min 31 sec
-5. clem 0 min 37 sec
+1 kilian 5 0 8
+2 kik 5 0 8
+3 kik 5 0 17
+4 clemclem 6 0 38
+5 christel 5 0 46
+6 kilian_test 7 0 57

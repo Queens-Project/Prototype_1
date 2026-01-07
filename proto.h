@@ -16,6 +16,7 @@
 typedef struct {
     char pseudo[25];
     int temps;
+	int taille;
 } Score;
 
 // structures clem
@@ -71,11 +72,12 @@ void afficher_scores();
 void regles_du_jeu();
 int choisir_taille_grille(void);
 void lancer_partie(const char *pseudo);
+void afficher_scores_in_game(Grille *g);
 
-void update_scores(const char *pseudo, int temps);
+void update_scores(const char *pseudo, int temps, int taille);
 int load_scores(Score scores[]);
 void add_score(Score scores[], int *count, const char *pseudo, int temps);
 void sort_scores(Score scores[], int n);
-void save_scores(Score scores[], int count);
+void save_scores(Score scores[], int count, int taille);
 
 #endif //PROTO_H
