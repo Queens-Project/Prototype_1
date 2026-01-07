@@ -1,0 +1,142 @@
+REGLES DU JEU — QUEENS
+
+
+🎯 OBJECTIF DU JEU
+
+Le but du jeu est de placer exactement une reine par ligne, 
+par colonne et par région, sans qu’aucune reine ne soit en conflit avec une autre.
+
+Une fois toutes les reines correctement placees selon les regles, la partie est gagnee.
+
+
+🧩 PRINCIPE DES REINES
+
+Une reine :
+
+ne peut pas partager la même ligne avec une autre reine
+
+ne peut pas partager la même colonne
+
+ne peut pas être dans la même région
+
+ne peut pas être adjacente à une autre reine (horizontalement, verticalement ou en diagonale)
+
+
+🧱 LA GRILLE
+
+La grille est composée de régions colorées
+
+Chaque région doit contenir une seule reine
+
+La taille de la grille peut varier :
+
+5×5 (par défaut)
+
+jusqu’à 8×8
+
+Une grille est choisie aléatoirement parmi celles disponibles pour la taille sélectionnée
+
+
+⌨️ COMMANDES CLAVIER
+
+Déplacements
+
+Flèche Haut : déplacer le curseur vers le haut
+
+Flèche Bas : déplacer le curseur vers le bas
+
+Flèche Gauche : déplacer le curseur vers la gauche
+
+Flèche Droite : déplacer le curseur vers la droite
+
+Actions
+
+ESPACE ou ENTRÉE :
+→ placer une reine sur la case
+→ ou retirer la reine si elle est déjà présente
+
+X :
+→ placer ou retirer une marque (aide visuelle)
+→ une marque n’a aucun impact sur les règles
+
+Q :
+→ quitter la partie immédiatement
+
+
+🏆 CONDITION DE VICTOIRE
+
+La victoire est atteinte lorsque :
+
+toutes les lignes contiennent exactement une reine
+
+toutes les colonnes contiennent exactement une reine
+
+toutes les régions contiennent exactement une reine
+
+aucune reine n’est en conflit avec une autre
+
+Un message "VICTOIRE !" s’affiche à l’écran lorsque ces conditions sont remplies.
+
+
+⏱️ GESTION DU TEMPS
+
+Le chronomètre démarre au lancement de la partie
+
+Le temps est affiché en temps réel pendant la partie
+
+Le temps est mesuré en minutes et secondes
+
+
+💾 ENREGISTREMENT DES SCORES
+
+Le score est enregistré uniquement en cas de victoire
+
+Le score sauvegardé contient :
+
+le pseudo du joueur
+
+le temps total de la partie
+
+Les scores sont classés du plus rapide au plus lent
+
+Seuls les 15 meilleurs scores sont conservés
+
+⚠️ Important :
+
+Quitter la partie avec la touche Q
+❌ n’enregistre PAS le score
+❌ n’enregistre PAS le temps
+
+
+👤 PSEUDO
+
+Le joueur doit entrer un pseudo avant de jouer
+
+Les espaces sont automatiquement remplacés par des _
+
+Exemple :
+
+Jean Dupont → Jean_Dupont
+
+Les nombres sont interdit
+
+
+📋 MENU PRINCIPAL
+
+Depuis le menu principal, le joueur peut :
+
+N : lancer une nouvelle partie
+
+S : afficher les scores
+
+R : consulter les règles du jeu
+
+Q : quitter le jeu
+
+
+✅ CONSEIL
+
+Prenez votre temps, utilisez les marques (X) pour réfléchir,
+et cherchez une solution logique plutôt que rapide.
+
+Bonne chance 👑
