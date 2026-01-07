@@ -54,8 +54,9 @@ int	validation(Grille *g);
 
 void init_colors_cases(void);
 void afficherGrilleNcurses(const Grille *g, int x, int y);
+void afficherGrilleBlanche(const Grille *g);
 
-int	game_loop(Grille *g, time_t debut);
+int	game_loop(Grille *g, time_t *debut);
 QueenError	placer_queen(Grille *g, int line, int col);
 QueenError	placer_marque(Grille *g, int line, int col);
 const char	*queen_error_msg(QueenError err);

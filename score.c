@@ -177,7 +177,7 @@ void	lancer_partie(const char *pseudo)
 	time_t debut = time(NULL);
 
 	// si victoire alors on enregistre le score
-	if (game_loop(&g, debut) == 1)
+	if (game_loop(&g, &debut) == 1)
 	{
 		time_t fin = time(NULL);
 		int temps = (int)(fin - debut);
