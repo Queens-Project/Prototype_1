@@ -68,11 +68,6 @@ void	crea_pseudo()
 }
 
 
-
-#include <ncurses.h>
-#include <string.h>
-#include <locale.h>
-
 static void strip_crlf(char *s)
 {
     /* Supprime \r et \n (CRLF Windows ou LF Linux) */
@@ -156,7 +151,6 @@ void regles_du_jeu(void)
     int ch;
     while ((ch = getch()) != 'q' && ch != 'Q') { }
 }
-
 
 
 void	menu()
