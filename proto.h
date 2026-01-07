@@ -16,6 +16,7 @@
 typedef struct {
     char pseudo[25];
     int temps;
+	int taille;
 } Score;
 
 // structures clem
@@ -53,9 +54,8 @@ int	validation(Grille *g);
 
 void init_colors_cases(void);
 void afficherGrilleNcurses(const Grille *g, int x, int y);
-void afficherGrilleBlanche(const Grille *g);
 
-int game_loop(Grille *g, time_t *debut);
+int	game_loop(Grille *g, time_t debut);
 QueenError	placer_queen(Grille *g, int line, int col);
 QueenError	placer_marque(Grille *g, int line, int col);
 const char	*queen_error_msg(QueenError err);
@@ -72,11 +72,12 @@ void afficher_scores();
 void regles_du_jeu();
 int choisir_taille_grille(void);
 void lancer_partie(const char *pseudo);
+void afficher_scores_in_game(Grille *g);
 
-void update_scores(const char *pseudo, int temps);
+void update_scores(const char *pseudo, int temps, int taille);
 int load_scores(Score scores[]);
 void add_score(Score scores[], int *count, const char *pseudo, int temps);
 void sort_scores(Score scores[], int n);
-void save_scores(Score scores[], int count);
+void save_scores(Score scores[], int count, int taille);
 
 #endif //PROTO_H

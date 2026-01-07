@@ -68,144 +68,105 @@ void	crea_pseudo()
 }
 
 
-static void strip_crlf(char *s)
-{
-    /* Supprime \r et \n (CRLF Windows ou LF Linux) */
-    s[strcspn(s, "\r\n")] = '\0';
-}
 
-void regles_du_jeu(void)
+void	regles_du_jeu()
 {
     FILE *f = fopen("regle_du_jeu.txt", "r");
-    int rows, cols;
-    char line[512];
+    char line[256];
+    int y = 0;
+    int tap = 0;
 
     clear();
-    refresh();
-    flushinp();
-
-    getmaxyx(stdscr, rows, cols);
+	flushinp();
 
     if (!f)
     {
         mvprintw(0, 0, "Erreur d'ouverture du fichier regle_du_jeu.txt");
-        mvprintw(2, 0, "Appuyez sur une touche pour revenir...");
+        mvprintw(2, 0, "Appuyez sur une touche pour revenir");
         refresh();
         getch();
         return;
     }
 
-    /* Terminal trop petit : message clair */
-    if (rows < 6 || cols < 30)
+    int rows, cols;
+    getmaxyx(stdscr, rows, cols);
+
+    while (fgets(line, sizeof(line), f) && y < rows - 2)
     {
-        mvprintw(0, 0, "Fenetre trop petite (%dx%d). Agrandissez le terminal.", rows, cols);
-        mvprintw(2, 0, "Appuyez sur une touche pour revenir...");
-        refresh();
-        getch();
-        fclose(f);
-        return;
-    }
-
-    /* Évite les artefacts : on part d'un écran propre */
-    erase();
-    refresh();
-
-    /* Autorise le scroll si le texte dépasse */
-    scrollok(stdscr, TRUE);
-    idlok(stdscr, TRUE);      /* permet à ncurses d'optimiser le scroll */
-
-    int max_text_rows = rows - 2;   /* dernière ligne réservée au prompt */
-    int y = 0;
-
-    while (fgets(line, sizeof(line), f))
-    {
-        strip_crlf(line);
-
-        /* Si la ligne est plus longue que l'écran, on la tronque proprement */
-        if ((int)strlen(line) > cols - 1)
-            line[cols - 1] = '\0';
-
-        /* Si on arrive en bas, on scrolle automatiquement */
-        if (y >= max_text_rows)
-        {
-            scroll(stdscr);
-            y = max_text_rows - 1;
-            move(y, 0);
-            clrtoeol();
-        }
-
-        move(y, 0);
-        clrtoeol();                 /* IMPORTANT : supprime les restes d'une ancienne ligne plus longue */
-        printw("%s", line);
-        y++;
+        mvprintw(y++, 0, "%s", line);
     }
 
     fclose(f);
 
-    /* Ligne d'aide en bas */
-    move(rows - 1, 0);
-    clrtoeol();
-    mvprintw(rows - 1, 0, "Appuyez sur Q pour revenir au menu");
+    mvprintw(y + 1, 0, "Appuyez sur Q pour revenir au menu");
     refresh();
 
-    int ch;
-    while ((ch = getch()) != 'q' && ch != 'Q') { }
-}
+    while ((tap = getch()) != 'q' && tap != 'Q')
+        ;
 
-
-void	menu()
-{
-	setlocale(LC_ALL, "");
-	initscr();
-	cbreak();
-	noecho();
-	keypad(stdscr, TRUE);
-
-	int tap = 0;
-
-	while(1)
+	if (tap == 'q' || tap == 'Q')
 	{
 		clear();
-		mvprintw(0,0,"=== MENU PRINCIPAL ===");
-		mvprintw(2,0,"(N) Nouvelle Partie");
-		mvprintw(3,0,"(S) Afficher les Scores");
-		mvprintw(4,0,"(R) Règles du Jeu");
-		mvprintw(5,0,"(Q) Quitter");
 		refresh();
-
-		tap = getch();
-
-		int	running = 1;
-		while(running){
-			if(tap=='n' || tap=='N')
-			{
-				running = 0;
-				clear();
-				refresh();
-				crea_pseudo();
-			}
-			else if(tap=='s' || tap=='S')
-			{
-				running = 0;
-				clear();
-				refresh();
-				afficher_scores();
-			}
-			else if(tap=='r' || tap=='R')
-			{
-				running = 0;
-				clear();
-				refresh();
-				regles_du_jeu();
-			}
-			else if(tap=='q' || tap=='Q')
-			{
-				running = 0;
-				endwin();
-				return;
-			}
-		}
 	}
+}
+
+void menu()
+{
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+
+    int tap;
+
+    while (1)
+    {
+        clear();
+        mvprintw(0,0,"=== MENU PRINCIPAL ===");
+        mvprintw(2,0,"(N) Nouvelle Partie");
+        mvprintw(3,0,"(S) Afficher les Scores");
+        mvprintw(4,0,"(R) Regles du Jeu");
+        mvprintw(5,0,"(Q) Quitter");
+        refresh();
+
+        tap = getch();
+
+        switch (tap)
+        {
+            case 'n':
+            case 'N':
+                clear();
+                refresh();
+                crea_pseudo();
+                break;
+
+            case 's':
+            case 'S':
+                clear();
+                refresh();
+                afficher_scores();
+                break;
+
+            case 'r':
+            case 'R':
+                clear();
+                refresh();
+                regles_du_jeu();
+                break;
+
+            case 'q':
+            case 'Q':
+                endwin();
+                return;
+
+            default:
+                mvprintw(9, 0, "Touche invalide. Appuyez sur une touche...");
+                refresh();
+                getch();
+                break;
+        }
+    }
 }
 
 int	main()
