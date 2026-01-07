@@ -103,7 +103,7 @@ int	game_loop(Grille *g, time_t *debut)
 		attrset(A_NORMAL);
 
 		mvprintw(g->taille+1, 0,
-             "Fleches: bouger | Espace/Entree: Reine | X: marque | Q: quitter");
+             "Fleches: bouger | Espace/Entree: Reine | X: marque \nQ: quitter | P: Pause");
 
 		refresh();
 		int	ch = getch();
