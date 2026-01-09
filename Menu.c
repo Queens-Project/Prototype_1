@@ -7,44 +7,49 @@
 #include <assert.h>
 #include "proto.h"
 
-int	choisir_taille_grille(void){
-	int	taille = 5;
-	int	ch;
+int choisir_taille_grille(void)
+{
+    int taille = 5;
+    int ch;
 
-	clear();
-	mvprintw(0, 0, "Taille de grille par defaut : 5x5");
-	mvprintw(2, 0, "Appuyez sur ENTREE pour continuer");
-	mvprintw(3, 0, "Ou appuyez sur (M) pour modifier la taille");
-	refresh();
+    clear();
+    mvprintw(0, 0, "Taille de grille par defaut : 5x5");
+    mvprintw(2, 0, "Appuyez sur ENTREE pour continuer");
+    mvprintw(3, 0, "Ou appuyez sur (M) pour modifier la taille");
+    refresh();
 
-	while (1)
-	{
-		ch = getch();
+    while (1)
+    {
+        ch = getch();
+        if (ch == '\n' || ch == KEY_ENTER)
+            return taille;
+        if (ch == 'm' || ch == 'M')
+            break;
+    }
 
-		/* ENTREE → taille par défaut */
-		if (ch == '\n' || ch == KEY_ENTER)
-			return taille;
+    while (1)
+    {
+        char buf[8];
 
-		/* Modifier la taille */
-		if (ch == 'm' || ch == 'M')
-			break;
-	}
+        clear();
+        mvprintw(0, 0, "Choisissez une taille de grille (5 a %d) : ", N);
+        mvprintw(2, 0, "Entrez un nombre puis ENTREE");
+        refresh();
 
-    /* --- Choix manuel de la taille --- */
-	clear();
-	mvprintw(0, 0, "Choisissez une taille de grille (5 a 8) : ");
-	refresh();
+        echo();
+        getnstr(buf, (int)sizeof(buf) - 1);
+        noecho();
 
-	while (1)
-	{
-		ch = getch();
-		if (ch >= '5' && ch <= '8')
-		{
-			taille = ch - '0';
-			return taille;
-		}
-	}
+        int v = atoi(buf);
+        if (v >= 5 && v <= N)
+            return v;
+
+        mvprintw(4, 0, "Taille invalide. Appuyez sur une touche...");
+        refresh();
+        getch();
+    }
 }
+
 
 
 
@@ -152,60 +157,62 @@ void regles_du_jeu(void)
     while ((ch = getch()) != 'q' && ch != 'Q') { }
 }
 
-
-void	menu()
+void menu()
 {
-	setlocale(LC_ALL, "");
-	initscr();
-	cbreak();
-	noecho();
-	keypad(stdscr, TRUE);
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
 
-	int tap = 0;
+    int tap;
 
-	while(1)
-	{
-		clear();
-		mvprintw(0,0,"=== MENU PRINCIPAL ===");
-		mvprintw(2,0,"(N) Nouvelle Partie");
-		mvprintw(3,0,"(S) Afficher les Scores");
-		mvprintw(4,0,"(R) Règles du Jeu");
-		mvprintw(5,0,"(Q) Quitter");
-		refresh();
+    while (1)
+    {
+        clear();
+        mvprintw(0,0,"=== MENU PRINCIPAL ===");
+        mvprintw(2,0,"(N) Nouvelle Partie");
+        mvprintw(3,0,"(S) Afficher les Scores");
+        mvprintw(4,0,"(R) Regles du Jeu");
+        mvprintw(5,0,"(Q) Quitter");
+        refresh();
 
-		tap = getch();
+        tap = getch();
 
-		int	running = 1;
-		while(running){
-			if(tap=='n' || tap=='N')
-			{
-				running = 0;
-				clear();
-				refresh();
-				crea_pseudo();
-			}
-			else if(tap=='s' || tap=='S')
-			{
-				running = 0;
-				clear();
-				refresh();
-				afficher_scores();
-			}
-			else if(tap=='r' || tap=='R')
-			{
-				running = 0;
-				clear();
-				refresh();
-				regles_du_jeu();
-			}
-			else if(tap=='q' || tap=='Q')
-			{
-				running = 0;
-				endwin();
-				return;
-			}
-		}
-	}
+        switch (tap)
+        {
+            case 'n':
+            case 'N':
+                clear();
+                refresh();
+                crea_pseudo();
+                break;
+
+            case 's':
+            case 'S':
+                clear();
+                refresh();
+                afficher_scores();
+                break;
+
+            case 'r':
+            case 'R':
+                clear();
+                refresh();
+                regles_du_jeu();
+                break;
+
+            case 'q':
+            case 'Q':
+                endwin();
+                return;
+
+            default:
+                mvprintw(9, 0, "Touche invalide. Appuyez sur une touche...");
+                refresh();
+                getch();
+                break;
+        }
+    }
 }
 
 int	main()
