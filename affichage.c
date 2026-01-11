@@ -1,14 +1,20 @@
 #include "proto.h"
 
+
+/*Ce fichier contient les fonctions nécessaires au bon 
+fonctionnement de l'affichage dans la console.*/
+
+
+/* Fonction d'initialisation des couleurs.*/
 void	init_colors_cases(void)
 {
+/*Ncurses fournit 8 couleurs par défaut, i lfaut donc en créer par nous-même.
+Mais il faut savoir que toutes les consoles ne peuvent pas afficher le même nombre de couleur 
+--> on teste la console pour savoir combien de couleur elle prend en charge.*/
 	start_color();
 
-	/* Paires 1..10 : régions 0..9 */
-	/* On essaie d'obtenir 10 couleurs de fond distinctes. */
 	int	bg[10];
 
-	/* Base (0..7) : rouge, vert, jaune, bleu, magenta, cyan, noir, blanc */
 	bg[0] = COLOR_RED;
 	bg[1] = COLOR_GREEN;
 	bg[2] = COLOR_YELLOW;
@@ -18,13 +24,10 @@ void	init_colors_cases(void)
 	bg[6] = COLOR_BLACK;
 	bg[7] = COLOR_WHITE;
 
-	/* Deux couleurs supplémentaires si possible */
+	/* Test de la console */
 	if (COLORS >= 16 && can_change_color())
 	{
-		/* Indices 8 et 9 disponibles en général si COLORS>=16 */
-		/* Orange (approx) */
 		init_color(8, 1000, 500, 0);
-		/* Violet/rose (approx) */
 		init_color(9, 700, 0, 700);
 
 		bg[8] = 8;
@@ -32,14 +35,13 @@ void	init_colors_cases(void)
 	}
 	else
 	{
-		/* Fallback : on recycle (moins lisible, mais jouable partout) */
 		bg[8] = COLOR_RED;
 		bg[9] = COLOR_BLUE;
 	}
 
 	for (int r = 0; r < 10; r++)
 	{
-		/* Choix du texte selon fond (lisibilité) */
+		/* Choix du texte selon le fond */
 		int	fg = COLOR_BLACK;
 		if (bg[r] == COLOR_BLACK || bg[r] == COLOR_BLUE || bg[r] == COLOR_MAGENTA)
 			fg = COLOR_WHITE;
@@ -47,12 +49,11 @@ void	init_colors_cases(void)
 		init_pair(1 + r, fg, bg[r]);
 	}
 
-	/* Paire 11 : noir sur blanc (pause + curseur sur fond noir) */
 	init_pair(11, COLOR_BLACK, COLOR_WHITE);
 }
 
 
-
+/*Fonction d'affichage de la grille.*/
 void	afficherGrilleNcurses(const Grille *g, int x, int y)
 {
 	for (int i = 0; i < g->taille; i++)
@@ -61,7 +62,6 @@ void	afficherGrilleNcurses(const Grille *g, int x, int y)
 		{
 			int	region = g->regions[i][j];
 
-			/* sécurité : régions attendues 0..9 pour 10x10 */
 			if (region < 0) region = 0;
 			if (region > 9) region = 9;
 
@@ -70,9 +70,8 @@ void	afficherGrilleNcurses(const Grille *g, int x, int y)
 
 			if (is_cursor)
 			{
-				/* Si la région est noire (dans notre mapping: region==6),
-				   on force un curseur très visible */
-				if (region == 6) /* fond noir */
+				/*Condtion pour s'assurer que le curseur soit visible.*/
+				if (region == 6)
 					attron(COLOR_PAIR(11));
 				else
 				{
@@ -119,7 +118,8 @@ void	afficherGrilleNcurses(const Grille *g, int x, int y)
 	}
 }
 
-
+/*Affiche une grille toute blanche
+--> on ne s'en sert que pour mettre le jeu en pause*/
 void	afficherGrilleBlanche(const Grille *g)
 {
 	for (int i = 0; i < g->taille; i++)

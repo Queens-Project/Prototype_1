@@ -1,18 +1,17 @@
 #include "proto.h"
 
-/*Rappel des règles du Cahier des Charges
-** - pas de reine adjacente (8cases autour)
-** - une reine par ligne
-** - une reine par colonne
-** - une reine par région
-*/
+/*Ce fichier contient les fonctions qui vérifient qu'un 
+placement de reine voulu par le joueur est valide*/
 
+
+/*Vérifie que le placement donné en argument est situé 
+dans la grille (et pas en dehors des frontières)*/
 int	inside_grille(Grille *g, int line, int col)
 {
 	return (g && line>=0 && col>=0 && line<g->taille && col < g->taille);
 }
 
-/* Check que les 8 cases adjacentes ne contiennent 
+/*Vérifie que les 8 cases adjacentes ne contiennent 
 pas de reine. Si OK alors renvoie 1, 0 sinon.*/
 int	check_adjacent(int col, int line, Grille *g)
 {
@@ -39,7 +38,7 @@ int	check_adjacent(int col, int line, Grille *g)
 }
 
 
-/* Check qu'il n'y ait pas déjà une reine 
+/*Vérifie qu'il n'y ait pas déjà une reine 
 placée dans la même région*/
 int	check_region(int col, int line, Grille *g)
 {
@@ -63,7 +62,7 @@ int	check_region(int col, int line, Grille *g)
 }
 
 
-/* Check qu'il n'y a pas déjà une reine sur la même ligne*/
+/*Vérifie qu'il n'y a pas déjà une reine sur la même ligne.*/
 int	check_line(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))
@@ -81,7 +80,7 @@ int	check_line(int col, int line, Grille *g)
 }
 
 
-/* Check qu'il n'y ait ^pas déjà une reine sur la même colonne. */
+/*Vérifie qu'il n'y ait pas déjà une reine sur la même colonne. */
 int	check_column(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))
@@ -99,7 +98,8 @@ int	check_column(int col, int line, Grille *g)
 }
 
 
-/* Utilise les fonctions précédentes pour déterminer si une reine peut être placée. */
+/*Détermine si le placement de reine demandé par le joueur est valide.
+Utilise toutes les fonctions de vérifications précédentes.*/
 QueenError placement_queen(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))

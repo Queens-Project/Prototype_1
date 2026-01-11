@@ -1,3 +1,2 @@
-1 kiks 5 0 9
-2 caca 9 1 30
-3 tets 8 1 44
+1 girafe 10 6496 2 8
+2 loup 5 2556 0 26

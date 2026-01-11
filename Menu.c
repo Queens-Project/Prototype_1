@@ -1,12 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-#include <ncurses.h>
-#include <ctype.h>
-#include <assert.h>
 #include "proto.h"
 
+/*
+Ce fichier gère l’ensemble des menus du jeu (menu principal, choix 
+de la taille de la grille, affichage des règles) et les interactions 
+utilisateur associées avant le lancement d’une partie.
+*/
+
+
+/*
+Permet au joueur de choisir la taille de la grille avant de lancer une partie.
+La taille par défaut est 5*5, mais l'utilisateur peut la modifier via le clavier.
+*/
 int	choisir_taille_grille(void)
 {
 	int	taille = 5;
@@ -51,8 +55,9 @@ int	choisir_taille_grille(void)
 }
 
 
-
-
+/*
+Permet au joueur de choisir son pseudo avant de choisir la taille de la grille.
+*/
 void	crea_pseudo()
 {
 	char	pseudo[25];
@@ -73,12 +78,20 @@ void	crea_pseudo()
 }
 
 
+/*
+Supprime les caractères de fin de ligne (\n ou \r\n).
+(Fonction utile suite à un problème rencontré)
+*/
 void	strip_crlf(char *s)
 {
-    /* Supprime \r et \n (CRLF Windows ou LF Linux) */
 	s[strcspn(s, "\r\n")] = '\0';
 }
 
+
+/*
+Affiche les règles du jeu à partir d'un fichier texte.
+L'utilisateur peut quitter l'affichage pour revenir au menu principal.
+*/
 void	regles_du_jeu(void)
 {
 	FILE	*f = fopen("regle_du_jeu.txt", "r");
@@ -100,7 +113,6 @@ void	regles_du_jeu(void)
 		return;
 	}
 
-	/* Terminal trop petit : message clair */
 	if (rows < 6 || cols < 30)
 	{
 		mvprintw(0, 0, "Fenetre trop petite (%dx%d). Agrandissez le terminal.", rows, cols);
@@ -111,15 +123,13 @@ void	regles_du_jeu(void)
 		return;
 	}
 
-    /* Évite les artefacts : on part d'un écran propre */
 	erase();
 	refresh();
 
-    /* Autorise le scroll si le texte dépasse */
 	scrollok(stdscr, TRUE);
-	idlok(stdscr, TRUE);      /* permet à ncurses d'optimiser le scroll */
+	idlok(stdscr, TRUE);// <-- permet à ncurses d'optimiser le scroll
 
-	int	max_text_rows = rows - 2;   /* dernière ligne réservée au prompt */
+	int	max_text_rows = rows - 2;
 	int	y = 0;
 
 	while (fgets(line, sizeof(line), f))
@@ -140,7 +150,7 @@ void	regles_du_jeu(void)
 		}
 
 		move(y, 0);
-		clrtoeol();                 /* IMPORTANT : supprime les restes d'une ancienne ligne plus longue */
+		clrtoeol();/*<-- supprime les restes d'une ancienne ligne plus longue */
 		printw("%s", line);
 		y++;
 	}
@@ -157,6 +167,13 @@ void	regles_du_jeu(void)
 	while ((ch = getch()) != 'q' && ch != 'Q') { }
 }
 
+
+/*
+Affiche le menu principal du jeu et gère les choix de l'utilisateur :
+--> Lancer une partie
+--> Afficher les règles
+--> Quitter le jeu
+*/
 void	menu()
 {
 	initscr();
@@ -215,6 +232,10 @@ void	menu()
 	}
 }
 
+/*
+Le programme commence ici.
+Lance le menu principal du jeu.
+*/
 int	main()
 {
 	menu();

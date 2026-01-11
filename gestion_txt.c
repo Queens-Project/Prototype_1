@@ -53,8 +53,10 @@ int	lectureGrille(FILE *f, Grille *g)
 	return (1);
 }
 
-
-int lireGrilleFromFichier(const char *nomFichier, Grille *g)
+/*Ouvre un fichier grille.txt, récupère la taille 
+de grille et met la grille dans une structure.
+Utilise les fonctions définies ci-dessus pour faire tout ça.*/
+int	lireGrilleFromFichier(const char *nomFichier, Grille *g)
 {
 	FILE	*f = ouvrirFichier(nomFichier);
 	if (!f)

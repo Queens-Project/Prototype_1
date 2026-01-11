@@ -1,5 +1,11 @@
 #include "proto.h"
 
+/*Ce fichier contient la partie principale de l'algorithme de jeu,
+ainsi que les fonctions utiles au jeu.*/
+
+
+/*Renvoi un message d'erreur cordial au joueur 
+en fonction de l'erreur brute donnée.*/
 const char	*queen_error_msg(QueenError err)
 {
 	if (err == PLACEMENT_OK)
@@ -65,6 +71,7 @@ QueenError	placer_marque(Grille *g, int line, int col)
 }
 
 
+/*Fonction d'affichage du temps pendant la partie.*/
 void	draw_timer(time_t debut, int x_offset)
 {
 	int	rows, cols;
@@ -88,17 +95,20 @@ void	draw_timer(time_t debut, int x_offset)
 }
 
 
+/*Fonction qui gère la pause :
+- Affiche une grille toute blanche (pour pas qu'il n'y ai de triche)
+- Stoppe le temps pour ne pas que le temps pris en pause ne soit décompté.
+*/
 int	handle_pause(Grille *g, time_t *debut)
 {
 	time_t	pause_start = time(NULL);
-	int	frozen_elapsed = (int)(pause_start - *debut); /* temps affiché figé */
+	int		frozen_elapsed = (int)(pause_start - *debut);
 
 	while (1)
 	{
 		clear();
 		afficherGrilleBlanche(g);
 
-		/* Affiche un timer figé : on “simule” un debut tel que time()-debut == frozen_elapsed */
 		draw_timer(time(NULL) - frozen_elapsed, 70);
 
 		mvprintw(g->taille + 1, 0, "=== PAUSE ===  P: reprendre | Q: quitter");
@@ -110,12 +120,14 @@ int	handle_pause(Grille *g, time_t *debut)
 		if (chp == 'p' || chp == 'P')
 			break; /* reprendre */
 	}
-
-	*debut += (time(NULL) - pause_start); /* exclure la durée de pause */
-	return 1; /* continuer */
+	*debut += (time(NULL) - pause_start); /* exclue la durée de pause */
+	return 1;
 }
 
 
+/*Fonction principale du jeu.
+Utilise les fonctions définies ci-dessus.
+Est appelée dans lancer_partie().*/
 int	game_loop(Grille *g, time_t *debut)
 {
 	int	line = 0;
@@ -130,9 +142,7 @@ int	game_loop(Grille *g, time_t *debut)
 
 		draw_timer(*debut, 70);
 
-		mvprintw(g->taille + 1, 0,
-                 "Fleches: bouger | Espace/Entree: Reine | X: marque \nQ: quitter | P: Pause");
-
+		mvprintw(g->taille + 1, 0, "Fleches: bouger | Espace/Entree: Reine | X: marque \nQ: quitter | P: Pause");
 		refresh();
 
 		int	ch = getch();
