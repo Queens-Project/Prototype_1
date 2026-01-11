@@ -32,8 +32,8 @@ int choisir_taille_grille(void)
         char buf[8];
 
         clear();
-        mvprintw(0, 0, "Choisissez une taille de grille (5 a %d) : ", N);
-        mvprintw(2, 0, "Entrez un nombre puis ENTREE");
+        mvprintw(0, 0, "Choisissez une taille de grille (entre 5 et %d)", N);
+        mvprintw(2, 0, "Entrez un nombre puis appuyez sur ENTREE : ");
         refresh();
 
         echo();
