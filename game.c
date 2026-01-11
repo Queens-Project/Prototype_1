@@ -65,142 +65,123 @@ QueenError	placer_marque(Grille *g, int line, int col)
 }
 
 
+void	draw_timer(time_t debut, int x_offset)
+{
+	int	rows, cols;
+	getmaxyx(stdscr, rows, cols);
+
+	int	elapsed = (int)(time(NULL) - debut);
+	int	mm = elapsed / 60;
+	int	ss = elapsed % 60;
+
+	char	buf[32];
+	snprintf(buf, sizeof(buf), "%02d:%02d", mm, ss);
+
+	int	x = cols - (int)strlen(buf) - x_offset;
+	if (x < 0) x = 0;
+
+	attrset(A_NORMAL);
+	attron(A_REVERSE | A_BOLD);
+	mvprintw(0, x, "%s", buf);
+	attroff(A_REVERSE | A_BOLD);
+	attrset(A_NORMAL);
+}
+
+
+int	handle_pause(Grille *g, time_t *debut)
+{
+	time_t	pause_start = time(NULL);
+	int	frozen_elapsed = (int)(pause_start - *debut); /* temps affiché figé */
+
+	while (1)
+	{
+		clear();
+		afficherGrilleBlanche(g);
+
+		/* Affiche un timer figé : on “simule” un debut tel que time()-debut == frozen_elapsed */
+		draw_timer(time(NULL) - frozen_elapsed, 70);
+
+		mvprintw(g->taille + 1, 0, "=== PAUSE ===  P: reprendre | Q: quitter");
+		refresh();
+
+		int	chp = getch();
+		if (chp == 'q' || chp == 'Q')
+			return 0; /* quitter */
+		if (chp == 'p' || chp == 'P')
+			break; /* reprendre */
+	}
+
+	*debut += (time(NULL) - pause_start); /* exclure la durée de pause */
+	return 1; /* continuer */
+}
+
 
 int	game_loop(Grille *g, time_t *debut)
 {
-	int	running = 1;
 	int	line = 0;
 	int	col = 0;
-	
 
 	keypad(stdscr, TRUE);
 
-	while (running)
+	while (1)
 	{
 		clear();
 		afficherGrilleNcurses(g, line, col);
 
-		int	rows, cols;
-		getmaxyx(stdscr, rows, cols);
+		draw_timer(*debut, 70);
 
-		int elapsed = (int)(time(NULL) - *debut);
-		int	mm = elapsed / 60;
-		int	ss = elapsed % 60;
-
-		char	buf[32];
-		snprintf(buf, sizeof(buf), "%02d:%02d", mm, ss);
-
-		int	x = cols - (int)strlen(buf) - 70;
-		if (x < 0)
-			x = 0;
-
-		attrset(A_NORMAL);
-		attron(A_REVERSE | A_BOLD);
-
-		int	rc = mvprintw(0, x, "%s", buf);
-
-		attroff(A_REVERSE | A_BOLD);
-		attrset(A_NORMAL);
-
-		mvprintw(g->taille+1, 0,
-             "Fleches: bouger | Espace/Entree: Reine | X: marque \nQ: quitter | P: Pause");
+		mvprintw(g->taille + 1, 0,
+                 "Fleches: bouger | Espace/Entree: Reine | X: marque \nQ: quitter | P: Pause");
 
 		refresh();
+
 		int	ch = getch();
 
 		if (ch == 'q' || ch == 'Q')
 			return 0;
 
-		/* --- PAUSE --- */
-		else if (ch == 'p' || ch == 'P')
+		if (ch == 'p' || ch == 'P')
 		{
-			/* On fige le temps et on masque la grille */
-			time_t pause_start = time(NULL);
-			int elapsed_frozen = (int)(pause_start - *debut);
-
-			while (1)
-			{
-				clear();
-				afficherGrilleBlanche(g);
-
-				int rows2, cols2;
-				getmaxyx(stdscr, rows2, cols2);
-
-				int mm2 = elapsed_frozen / 60;
-				int ss2 = elapsed_frozen % 60;
-				char buf2[32];
-				snprintf(buf2, sizeof(buf2), "%02d:%02d", mm2, ss2);
-
-				int x2 = cols2 - (int)strlen(buf2) - 70;
-				if (x2 < 0) x2 = 0;
-
-				attrset(A_NORMAL);
-				attron(A_REVERSE | A_BOLD);
-				mvprintw(0, x2, "%s", buf2);
-				attroff(A_REVERSE | A_BOLD);
-				attrset(A_NORMAL);
-
-				mvprintw(g->taille + 1, 0, "=== PAUSE ===  P: reprendre | Q: quitter");
-				refresh();
-
-				int chp = getch();
-				if (chp == 'q' || chp == 'Q')
-					return 0;
-				if (chp == 'p' || chp == 'P')
-					break;
-			}
-
-			/* On decale le debut pour exclure la duree de pause */
-			*debut += (time(NULL) - pause_start);
+			if (!handle_pause(g, debut))
+				return 0;
 			continue;
 		}
 
-
-		else if (ch == KEY_UP && line>0)
-			line--;
-		else if (ch == KEY_DOWN && line < g->taille - 1)
-			line++;
-		else if (ch == KEY_LEFT && col > 0)
-			col--;
-		else if (ch == KEY_RIGHT && col < g->taille - 1)
-			col++;
+		if (ch == KEY_UP && line > 0) line--;
+		else if (ch == KEY_DOWN && line < g->taille - 1) line++;
+		else if (ch == KEY_LEFT && col > 0) col--;
+		else if (ch == KEY_RIGHT && col < g->taille - 1) col++;
 
 		else if (ch == 'x' || ch == 'X')
 		{
 			QueenError err = placer_marque(g, line, col);
 			if (err != PLACEMENT_OK)
 			{
-				mvprintw(g->taille+3, 0, "Marque impossible: %s\n", queen_error_msg(err));
-				mvprintw(g->taille+4, 0, "Appuie sur une touche...\n");
+				mvprintw(g->taille + 3, 0, "Marque impossible: %s\n", queen_error_msg(err));
+				mvprintw(g->taille + 4, 0, "Appuie sur une touche...\n");
 				refresh();
 				getch();
 			}
 		}
-
-		else if (ch ==' ' || ch=='\n')
+		else if (ch == ' ' || ch == '\n')
 		{
 			QueenError err = placer_queen(g, line, col);
-
 			if (err != PLACEMENT_OK)
 			{
-				mvprintw(g->taille+3, 0, "Placement refusé: %s\n", queen_error_msg(err));
-				mvprintw(g->taille+4, 0, "Appuie sur une touche...\n");
+				mvprintw(g->taille + 3, 0, "Placement refusé: %s\n", queen_error_msg(err));
+				mvprintw(g->taille + 4, 0, "Appuie sur une touche...\n");
 				refresh();
 				getch();
 			}
-			else
+			else if (validation(g))
 			{
-				if (validation(g))
-				{
-					clear();
-					afficherGrilleNcurses(g, line, col);
-					mvprintw(g->taille+3, 0, "VICTOIRE ! Appuie sur une touche...");
-					refresh();
-					getch();
-					return 1;
-				}
+				clear();
+				afficherGrilleNcurses(g, line, col);
+				mvprintw(g->taille + 3, 0, "VICTOIRE ! Appuie sur une touche...");
+				refresh();
+				getch();
+				return 1;
 			}
 		}
 	}
-	return (0);
 }

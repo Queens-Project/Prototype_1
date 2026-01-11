@@ -122,18 +122,3 @@ QueenError placement_queen(int col, int line, Grille *g)
 
 	return PLACEMENT_OK;
 }
-
-
-
-// /*Affichage du message de placement*/
-// const char *queen_error_str(QueenError err)
-// {
-// 	if (err == ERROR_NONE)        return "Placement valide";
-// 	if (err == ERROR_OUT_OF_BOUNDS) return "Hors de la grille";
-// 	if (err == ERROR_OCCUPIED)    return "Case deja occupee";
-// 	if (err == ERROR_ADJACENT)    return "Reine adjacente";
-// 	if (err == ERROR_LINE)        return "Reine deja sur la ligne";
-// 	if (err == ERROR_COLUMN)     return "Reine deja sur la colonne";
-// 	if (err == ERROR_REGION)     return "Reine deja dans la region";
-// 	return "Erreur inconnue";
-// }
