@@ -53,8 +53,10 @@ int	lectureGrille(FILE *f, Grille *g)
 	return (1);
 }
 
-
-int lireGrilleFromFichier(const char *nomFichier, Grille *g)
+/*Ouvre un fichier grille.txt, récupère la taille 
+de grille et met la grille dans une structure.
+Utilise les fonctions définies ci-dessus pour faire tout ça.*/
+int	lireGrilleFromFichier(const char *nomFichier, Grille *g)
 {
 	FILE	*f = ouvrirFichier(nomFichier);
 	if (!f)
@@ -74,44 +76,3 @@ int lireGrilleFromFichier(const char *nomFichier, Grille *g)
 	fclose(f);
 	return (1);
 }
-
-
-//Main de test
-// int	main()
-// {
-// 	Grille g;
-
-// 	if (lireGrilleFromFichier("8_1.txt", &g))
-// 	{
-// 		printf("Grille lue avec succès ! Taille = %d\n", g.taille);
-// 	}
-// 	else
-// 		printf("Erreur lors de la lecture du fichier.\n");
-
-// 	print_grille(g);
-// 	return (0);
-// }
-
-
-/*autre main de test*/
-// int main(void)
-// {
-// 	Grille g;
-
-// 	if (!lireGrilleFromFichier("8_01.txt", &g)) {
-// 		fprintf(stderr, "Erreur lors de la lecture de la grille.\n");
-// 		return 1;
-// 	}
-
-// 	initscr();
-// 	noecho();
-// 	curs_set(0);
-
-// 	init_colors_cases();
-// 	game_loop(&g);
-
-
-// 	endwin();
-
-// 	return (0);
-// }

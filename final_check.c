@@ -1,5 +1,10 @@
 #include "proto.h"
 
+/*Ce fichier contient les fonctions qui vérifient à chaque 
+mouvement du joueur si les conditions de victoire sont réunies.
+Ainsi le jeu détecte la victoire automatiquement dès que le joueur trouve la solution*/
+
+
 
 /*Compte le nombre de reine placées sur une ligne*/
 int	queen_ligne(Grille *g, int l)
@@ -13,6 +18,7 @@ int	queen_ligne(Grille *g, int l)
 	return (compteur);
 }
 
+
 /*Compte le nombre de reine placées sur une colonne*/
 int	queen_col(Grille *g, int c)
 {
@@ -24,6 +30,7 @@ int	queen_col(Grille *g, int c)
 	}
 	return (compteur);
 }
+
 
 /*Compte le nombre de régions*/
 int	nb_region(Grille *g)
@@ -39,6 +46,7 @@ int	nb_region(Grille *g)
 	}
 	return (max);
 }
+
 
 /*Compte le nombre de reine placées dans une région*/
 int	queen_region(Grille *g, int region_id)
@@ -56,7 +64,7 @@ int	queen_region(Grille *g, int region_id)
 }
 
 
-/**/
+/*Vérifie que la condition de non-adjacence est respectée par toute les reines*/
 int	queen_adjacente(Grille *g)
 {
 	for (int line=0; line <g->taille; line++)
@@ -89,6 +97,8 @@ int	queen_adjacente(Grille *g)
 }
 
 
+/*Détecte la victoire.
+Utilise toutes les focntions de conditions de victoires ci-dessus.*/
 int	validation(Grille *g)
 {
 	if (!g || g->taille <=0)
