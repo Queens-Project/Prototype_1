@@ -128,70 +128,95 @@ int	handle_pause(Grille *g, time_t *debut)
 /*Fonction principale du jeu.
 Utilise les fonctions définies ci-dessus.
 Est appelée dans lancer_partie().*/
-int	game_loop(Grille *g, time_t *debut)
+int game_loop(Grille *g, time_t *debut, int *line, int *col,
+              const char *pseudo, const char *grid_path)
 {
-	int	line = 0;
-	int	col = 0;
+    /* On travaille avec des int locaux, et on met à jour les pointeurs à la fin */
+    int l = (line ? *line : 0);
+    int c = (col ? *col : 0);
 
-	keypad(stdscr, TRUE);
+    keypad(stdscr, TRUE);
 
-	while (1)
-	{
-		clear();
-		afficherGrilleNcurses(g, line, col);
+    while (1)
+    {
+        clear();
+        afficherGrilleNcurses(g, l, c);
 
-		draw_timer(*debut, 70);
+        draw_timer(*debut, 70);
 
-		mvprintw(g->taille + 1, 0, "Fleches: bouger | Espace/Entree: Reine | X: marque \n\nECHAP: quitter | P: Pause");
-		refresh();
+        mvprintw(g->taille + 1, 0,
+                 "Fleches: bouger | Espace/Entree: Reine | X: marque | S: sauvegarder\n\nECHAP: quitter | P: Pause");
+        refresh();
 
-		int	ch = getch();
+        int ch = getch();
 
-		if ((ch) == KEY_ESC)
-			return 0;
+        if (ch == KEY_ESC)
+        {
+            if (line) *line = l;
+            if (col)  *col  = c;
+            return 0;
+        }
 
-		if (ch == 'p' || ch == 'P')
-		{
-			if (!handle_pause(g, debut))
-				return 0;
-			continue;
-		}
+        if (ch == 'p' || ch == 'P')
+        {
+            if (!handle_pause(g, debut))
+            {
+                if (line) *line = l;
+                if (col)  *col  = c;
+                return 0;
+            }
+            continue;
+        }
 
-		if (ch == KEY_UP && line > 0) line--;
-		else if (ch == KEY_DOWN && line < g->taille - 1) line++;
-		else if (ch == KEY_LEFT && col > 0) col--;
-		else if (ch == KEY_RIGHT && col < g->taille - 1) col++;
+        /* Sauvegarde */
+        if (ch == 's' || ch == 'S')
+        {
+            int ok = save_game_slot(pseudo, grid_path, g, *debut, l, c);
+            mvprintw(g->taille + 3, 0, ok ? "Sauvegarde OK." : "Sauvegarde impossible.");
+            mvprintw(g->taille + 4, 0, "Appuie sur une touche...");
+            refresh();
+            getch();
+            continue;
+        }
 
-		else if (ch == 'x' || ch == 'X')
-		{
-			QueenError err = placer_marque(g, line, col);
-			if (err != PLACEMENT_OK)
-			{
-				mvprintw(g->taille + 3, 0, "Marque impossible: %s\n", queen_error_msg(err));
-				mvprintw(g->taille + 4, 0, "Appuie sur une touche...\n");
-				refresh();
-				getch();
-			}
-		}
-		else if (ch == ' ' || ch == '\n')
-		{
-			QueenError err = placer_queen(g, line, col);
-			if (err != PLACEMENT_OK)
-			{
-				mvprintw(g->taille + 3, 0, "Placement refusé: %s\n", queen_error_msg(err));
-				mvprintw(g->taille + 4, 0, "Appuie sur une touche...\n");
-				refresh();
-				getch();
-			}
-			else if (validation(g))
-			{
-				clear();
-				afficherGrilleNcurses(g, line, col);
-				mvprintw(g->taille + 3, 0, "VICTOIRE ! Appuie sur une touche...");
-				refresh();
-				getch();
-				return 1;
-			}
-		}
-	}
+        if (ch == KEY_UP && l > 0) l--;
+        else if (ch == KEY_DOWN && l < g->taille - 1) l++;
+        else if (ch == KEY_LEFT && c > 0) c--;
+        else if (ch == KEY_RIGHT && c < g->taille - 1) c++;
+
+        else if (ch == 'x' || ch == 'X')
+        {
+            QueenError err = placer_marque(g, l, c);
+            if (err != PLACEMENT_OK)
+            {
+                mvprintw(g->taille + 3, 0, "Marque impossible: %s\n", queen_error_msg(err));
+                mvprintw(g->taille + 4, 0, "Appuie sur une touche...\n");
+                refresh();
+                getch();
+            }
+        }
+        else if (ch == ' ' || ch == '\n')
+        {
+            QueenError err = placer_queen(g, l, c);
+            if (err != PLACEMENT_OK)
+            {
+                mvprintw(g->taille + 3, 0, "Placement refuse: %s\n", queen_error_msg(err));
+                mvprintw(g->taille + 4, 0, "Appuie sur une touche...\n");
+                refresh();
+                getch();
+            }
+            else if (validation(g))
+            {
+                clear();
+                afficherGrilleNcurses(g, l, c);
+                mvprintw(g->taille + 3, 0, "VICTOIRE ! Appuie sur une touche...");
+                refresh();
+                getch();
+
+                if (line) *line = l;
+                if (col)  *col  = c;
+                return 1;
+            }
+        }
+    }
 }

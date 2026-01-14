@@ -1,0 +1,13 @@
+QUEENS_SAVE_V1
+PSEUDO=clement
+GRID_PATH=grilles/5/g5_01.txt
+N=5
+ELAPSED=14
+CURSOR=1,2
+
+GRID:
+.....
+.....
+XQ...
+X....
+X.QXX

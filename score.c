@@ -258,7 +258,10 @@ void	lancer_partie(const char *pseudo)
 
 	time_t	debut = time(NULL);
 
-	if (game_loop(&g, &debut) == 1)
+	int line = 0;
+	int col = 0;
+
+	if (game_loop(&g, &debut, &line, &col, pseudo, chemin) == 1)
 	{
 		time_t	fin = time(NULL);
 		int		temps = (int)(fin - debut);

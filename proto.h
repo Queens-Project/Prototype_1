@@ -61,7 +61,10 @@ void	init_colors_cases(void);
 void	afficherGrilleNcurses(const Grille *g, int x, int y);
 void	afficherGrilleBlanche(const Grille *g);
 
-int		game_loop(Grille *g, time_t *debut);
+int game_loop(Grille *g, time_t *debut, int *line, int *col,
+              const char *pseudo, const char *grid_path);
+
+
 QueenError	placer_queen(Grille *g, int line, int col);
 QueenError	placer_marque(Grille *g, int line, int col);
 const char	*queen_error_msg(QueenError err);
@@ -86,6 +89,14 @@ void	sort_scores(Score scores[], int n);
 void	save_scores(Score scores[], int count, int taille);
 int		calculer_score(int taille, int temps);
 void clear_scores(void);
+
+/* Sauvegardes multi-slots */
+int save_game_slot(const char *pseudo, const char *grid_path, const Grille *g,
+                   time_t debut, int cursor_line, int cursor_col);
+
+int load_game_slot(const char *pseudo, char *grid_path_out, size_t grid_path_cap,
+                   Grille *g_out, int *elapsed_out, int *cursor_line_out, int *cursor_col_out);
+
 
 
 #endif //PROTO_H

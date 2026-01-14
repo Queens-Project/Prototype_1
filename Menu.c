@@ -193,11 +193,13 @@ void	menu()
 	while (1)
 	{
 		clear();
-		mvprintw(0,0,"=== MENU PRINCIPAL ===");
-		mvprintw(2,0,"- N ------ Nouvelle Partie");
-		mvprintw(3,0,"- S ------ Afficher les Scores");
-		mvprintw(4,0,"- R ------ Regles du Jeu");
-		mvprintw(5,0,"- ECHAP -- Quitter");
+		mvprintw(0,0,"======= MENU PRINCIPAL =======");
+		mvprintw(2,0," - N ------ Nouvelle Partie");
+		mvprintw(3,0," - C ------ Charger une Partie");
+		mvprintw(4,0," - S ------ Afficher les Scores");
+		mvprintw(5,0," - R ------ Regles du Jeu");
+		mvprintw(6,0," - ECHAP -- Quitter");
+
 		refresh();
 
 		tap = getch();
@@ -209,6 +211,13 @@ void	menu()
 				clear();
 				refresh();
 				crea_pseudo();
+				break;
+
+			case 'c':
+			case 'C':
+				clear();
+				refresh();
+				load_game();
 				break;
 
 			case 's':
