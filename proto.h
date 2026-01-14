@@ -10,7 +10,7 @@
 #include <string.h>
 #include <math.h>
 
-
+#define KEY_ESC 27
 #define N 10
 #define MAX_SCORES 45
 
@@ -85,6 +85,7 @@ void	add_score(Score scores[], int *count, const char *pseudo, int temps);
 void	sort_scores(Score scores[], int n);
 void	save_scores(Score scores[], int count, int taille);
 int		calculer_score(int taille, int temps);
+void clear_scores(void);
 
 
 #endif //PROTO_H

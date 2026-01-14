@@ -160,11 +160,16 @@ void	regles_du_jeu(void)
 	/* Ligne d'aide en bas */
 	move(rows - 1, 0);
 	clrtoeol();
-	mvprintw(rows - 1, 0, "Appuyez sur Q pour revenir au menu");
+	mvprintw(rows - 1, 0, "Appuyez sur ECHAP pour revenir au menu");
 	refresh();
 
 	int	ch;
-	while ((ch = getch()) != 'q' && ch != 'Q') { }
+	while (1)
+	{
+		ch = getch();
+		if((ch) == KEY_ESC)
+		break;
+	}
 }
 
 
@@ -180,6 +185,8 @@ void	menu()
 	cbreak();
 	noecho();
 	keypad(stdscr, TRUE);
+	set_escdelay(25);
+
 
 	int	tap;
 
@@ -187,10 +194,10 @@ void	menu()
 	{
 		clear();
 		mvprintw(0,0,"=== MENU PRINCIPAL ===");
-		mvprintw(2,0,"(N) Nouvelle Partie");
-		mvprintw(3,0,"(S) Afficher les Scores");
-		mvprintw(4,0,"(R) Regles du Jeu");
-		mvprintw(5,0,"(Q) Quitter");
+		mvprintw(2,0,"- N ------ Nouvelle Partie");
+		mvprintw(3,0,"- S ------ Afficher les Scores");
+		mvprintw(4,0,"- R ------ Regles du Jeu");
+		mvprintw(5,0,"- ECHAP -- Quitter");
 		refresh();
 
 		tap = getch();
@@ -218,8 +225,7 @@ void	menu()
 				regles_du_jeu();
 				break;
 
-			case 'q':
-			case 'Q':
+			case KEY_ESC:
 				endwin();
 				return;
 

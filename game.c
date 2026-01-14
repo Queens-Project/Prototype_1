@@ -111,13 +111,13 @@ int	handle_pause(Grille *g, time_t *debut)
 
 		draw_timer(time(NULL) - frozen_elapsed, 70);
 
-		mvprintw(g->taille + 1, 0, "=== PAUSE ===  P: reprendre | Q: quitter");
+		mvprintw(g->taille + 1, 0, "=== PAUSE ===   P: reprendre | ECHAP: quitter");
 		refresh();
 
-		int	chp = getch();
-		if (chp == 'q' || chp == 'Q')
+		int	ch = getch();
+		if ((ch) == KEY_ESC)
 			return 0; /* quitter */
-		if (chp == 'p' || chp == 'P')
+		if (ch == 'p' || ch == 'P')
 			break; /* reprendre */
 	}
 	*debut += (time(NULL) - pause_start); /* exclue la durée de pause */
@@ -142,12 +142,12 @@ int	game_loop(Grille *g, time_t *debut)
 
 		draw_timer(*debut, 70);
 
-		mvprintw(g->taille + 1, 0, "Fleches: bouger | Espace/Entree: Reine | X: marque \nQ: quitter | P: Pause");
+		mvprintw(g->taille + 1, 0, "Fleches: bouger | Espace/Entree: Reine | X: marque \n\nECHAP: quitter | P: Pause");
 		refresh();
 
 		int	ch = getch();
 
-		if (ch == 'q' || ch == 'Q')
+		if ((ch) == KEY_ESC)
 			return 0;
 
 		if (ch == 'p' || ch == 'P')

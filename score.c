@@ -14,41 +14,67 @@ Ce fichier contient les fonctions qui gère le système de scores du jeu :
 Affiche la liste des meilleurs scores à l'écran.
 Attend que l'utilisateur appuie sur Q pour revenir au menu.
 */
-void	afficher_scores()
+void afficher_scores(void)
 {
-	Score	scores[MAX_SCORES];
-	int		count = load_scores(scores);
+    int tap;
 
-	int		y = 0;
-	int		tap = 0;
-	clear();
+    while (1)
+    {
+        Score scores[MAX_SCORES];
+        int count = load_scores(scores);
 
-	mvprintw(y++, 0, "=== SCORES ===");
-	y++;
+        clear();
 
-	for (int i = 0; i < count; i++)
-	{
-		mvprintw(y++, 0,
-            "%d. %-20s | %dX%d | %5d pts | %d:%02d",
-            i + 1,
-            scores[i].pseudo,
-            scores[i].taille,
-            scores[i].taille,
-            scores[i].score,
-            scores[i].temps / 60,
-            scores[i].temps % 60
-		);
-	}
+        int y = 0;
+        mvprintw(y++, 0, "=== SCORES ===");
+        y++;
 
-	mvprintw(y + 2, 0, "Appuyez sur Q pour revenir");
-	refresh();
+        if (count == 0)
+        {
+            mvprintw(y++, 0, "(Aucun score)");
+        }
+        else
+        {
+            for (int i = 0; i < count; i++)
+            {
+                mvprintw(y++, 0,
+                    "%d. %-20s | %dX%d | %5d pts | %d:%02d",
+                    i + 1,
+                    scores[i].pseudo,
+                    scores[i].taille,
+                    scores[i].taille,
+                    scores[i].score,
+                    scores[i].temps / 60,
+                    scores[i].temps % 60
+                );
+            }
+        }
 
-	while (tap != 'q' && tap != 'Q')
-		tap = getch();
+        mvprintw(y + 2, 0, "ECHAP : revenir      * : effacer tous les scores");
+        refresh();
+		
+        tap = getch();
 
-	clear();
-	refresh();
+        if (tap == KEY_ESC)
+            break;
+
+        if (tap == '*' || tap == 42)
+        {
+            clear_scores();
+
+            /* Optionnel: petit feedback */
+            mvprintw(y + 4, 0, "Scores effaces.");
+            refresh();
+
+            /* Important: évite des touches “en trop” qui trainent */
+            flushinp();
+        }
+    }
+
+    clear();
+    refresh();
 }
+
 
 
 /*
@@ -154,7 +180,7 @@ Ecrase le fichier existant afin de conserver un classement propre et trié.
 */
 void	save_scores(Score scores[], int count, int taille)
 {
-	(void)taille; // si tu ne l'utilises pas, évite warning
+	(void)taille;
 
 	FILE	*f = fopen("score.txt", "w");
 	if (!f) return;
@@ -243,30 +269,9 @@ void	lancer_partie(const char *pseudo)
 }
 
 
-
-void	afficher_scores_in_game(Grille *g)
+void clear_scores(void)
 {
-	FILE	*f = fopen("score.txt", "r");
-	char	line[256];
-	int		y = g->taille + 6;
-	int		tap;
-
-	flushinp();
-
-	if (!f)
-	{
-		mvprintw(g->taille + 5, 0, "Erreur d'ouverture du fichier score.txt");
-		refresh();
-		getch();
-		return;
-	}
-
-	refresh();
-	mvprintw(g->taille + 5, 0, "=== SCORES ===");
-
-	while (fgets(line, sizeof(line), f))
-	{
-		mvprintw(y++, 0, "%s", line);
-	}
-	fclose(f);
+    FILE *f = fopen("score.txt", "w");
+    if (f != NULL)
+        fclose(f);
 }
