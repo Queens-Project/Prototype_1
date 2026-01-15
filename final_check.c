@@ -6,7 +6,13 @@ Ainsi le jeu détecte la victoire automatiquement dès que le joueur trouve la s
 
 
 
-/*Compte le nombre de reine placées sur une ligne*/
+/*
+Fonction	: queen_ligne
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); l pour la ligne à vérifier
+Traitement	: Compte le nombre de Reine sur une ligne l
+Retour		: compteur est le nombre de Reine trouvées
+*/
 int	queen_ligne(Grille *g, int l)
 {
 	int	compteur = 0;
@@ -19,7 +25,14 @@ int	queen_ligne(Grille *g, int l)
 }
 
 
-/*Compte le nombre de reine placées sur une colonne*/
+
+/*
+Fonction	: queen_col
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); c pour la colonne à vérifier
+Traitement	: Compte le nombre de Reine sur une colonne c
+Retour		: compteur est le nombre de Reine trouvées
+*/
 int	queen_col(Grille *g, int c)
 {
 	int compteur = 0;
@@ -32,7 +45,14 @@ int	queen_col(Grille *g, int c)
 }
 
 
-/*Compte le nombre de régions*/
+
+/*
+Fonction	: nb_region
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h)
+Traitement	: Trouve l'id région maximum (car chaque région est identifié par un numéro. cf. fichiers textes du dossier grilles)
+Retour		: max est l'id région maximum trouvé
+*/
 int	nb_region(Grille *g)
 {
 	int	max = g->regions[0][0];
@@ -48,7 +68,14 @@ int	nb_region(Grille *g)
 }
 
 
-/*Compte le nombre de reine placées dans une région*/
+
+/*
+Fonction	: queen_region
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); region_id est le numéro d'une région
+Traitement	: Compte le nombre de Reine dans une région identifiée par region_id dans une grille g
+Retour		: compteur est le nombre de Reine trouvées
+*/
 int	queen_region(Grille *g, int region_id)
 {
 	int	compteur = 0;
@@ -64,7 +91,14 @@ int	queen_region(Grille *g, int region_id)
 }
 
 
-/*Vérifie que la condition de non-adjacence est respectée par toute les reines*/
+
+/*
+Fonction	: queen_adjacente
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); c pour la colonne à vérifier
+Traitement	: Vérifie qu'aucune Reine dans la grille g n'est adjacente avec une autre Reine
+Retour		: Retourne 0 si un cas d'adjacence est trouvé, 1 sinon.
+*/
 int	queen_adjacente(Grille *g)
 {
 	for (int line=0; line <g->taille; line++)
@@ -97,8 +131,14 @@ int	queen_adjacente(Grille *g)
 }
 
 
-/*Détecte la victoire.
-Utilise toutes les focntions de conditions de victoires ci-dessus.*/
+
+/*
+Fonction	: validation
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h)
+Traitement	: Utilise les fonctions de vérification précédentes pour vérifier les conditions de victoire
+Retour		: Retourne 0 si la grille n'est pas encore valide et 1 si la grille est validée (VICTOIRE)
+*/
 int	validation(Grille *g)
 {
 	if (!g || g->taille <=0)

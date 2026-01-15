@@ -4,8 +4,14 @@
 ainsi que les fonctions utiles au jeu.*/
 
 
-/*Renvoi un message d'erreur cordial au joueur 
-en fonction de l'erreur brute donnée.*/
+
+/*
+Fonction	: queen_error_msg
+Auteur		: Patata_Games
+Param		: err est un message d'erreur (cf. proto.h)
+Traitement	: Prend un message d'erreur 'brut' et renvoie un message 'soigné' prêt à étre affiché à l'utilisateur
+Retour		: Une chaîne de caractère qui est un message d'erreur compréhensible par le joueur
+*/
 const char	*queen_error_msg(QueenError err)
 {
 	if (err == PLACEMENT_OK)
@@ -26,10 +32,14 @@ const char	*queen_error_msg(QueenError err)
 }
 
 
-/*Place une reine ou la retire
-	- Si déjà une reine --> retire la reine
-	- Sinon --> vérification de placement possible et si oui alors place la reine
-	*/
+
+/*
+Fonction	: placer_queen
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour ligne; col pour colonne
+Traitement	: Place une Reine aux coordonnées (line,col) si possible
+Retour		: Retourne err, unn message brut interprétable par le jeu (cf. structure QueenError dans proto.h)
+*/
 QueenError	placer_queen(Grille *g, int line, int col)
 {
 	if (!inside_grille(g, line, col))
@@ -49,11 +59,14 @@ QueenError	placer_queen(Grille *g, int line, int col)
 }
 
 
-/*Place une marque ou la retire
-	- Si déjà une marque --> retire la marque
-	- Si vide --> place une marque
-	- Si Reine --> refus
-	*/
+
+/*
+Fonction	: placer_marque
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour ligne; col pour colonne
+Traitement	: Place une marque aux coordonnées (line, col) dans la grille g si possible
+Retour		: Retourne err, unn message brut interprétable par le jeu (cf. structure QueenError dans proto.h)
+*/
 QueenError	placer_marque(Grille *g, int line, int col)
 {
 	if (!inside_grille(g, line, col))
@@ -71,7 +84,8 @@ QueenError	placer_marque(Grille *g, int line, int col)
 }
 
 
-/*Fonction d'affichage du temps pendant la partie.*/
+
+
 void	draw_timer(time_t debut, int x_offset)
 {
 	int	rows, cols;
@@ -95,9 +109,13 @@ void	draw_timer(time_t debut, int x_offset)
 }
 
 
-/*Fonction qui gère la pause :
-- Affiche une grille toute blanche (pour pas qu'il n'y ai de triche)
-- Stoppe le temps pour ne pas que le temps pris en pause ne soit décompté.
+
+/*
+Fonction	: handle_pause
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h) ; debut est le pointeur sur le temps de début de partie
+Traitement	: Met le jeu en pause : affiche une grille blanche, fige le chronomètre et attend la reprise ou la sortie
+Retour		: Retourne 1 si le joueur reprend la partie, 0 si le joueur quitte
 */
 int	handle_pause(Grille *g, time_t *debut)
 {
@@ -125,9 +143,14 @@ int	handle_pause(Grille *g, time_t *debut)
 }
 
 
-/*Fonction principale du jeu.
-Utilise les fonctions définies ci-dessus.
-Est appelée dans lancer_partie().*/
+
+/*
+Fonction	: game_loop
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h) ; debut est le pointeur sur le temps de début de partie
+Traitement	: Boucle principale de jeu : gère les déplacements, placements (reines/marques), pause, affichage et détection de victoire
+Retour		: Retourne 1 si victoire, 0 si le joueur quitte
+*/
 int	game_loop(Grille *g, time_t *debut)
 {
 	int	line = 0;

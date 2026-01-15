@@ -1,6 +1,12 @@
 #include "proto.h"
 
-/*Ouvre un fichier et le retourne*/
+/*
+Fonction	: ouvrirFichier
+Auteur		: Patata_Games
+Param		: nomFichier est une chaîne de caractères correspondant au chemin/nom du fichier à ouvrir
+Traitement	: Ouvre le fichier en lecture ("r") et renvoie le pointeur de fichier associé
+Retour		: Retourne un pointeur FILE* valide si succès, NULL sinon
+*/
 FILE	*ouvrirFichier(const char *nomFichier)
 {
 	FILE	*f=fopen(nomFichier, "r");
@@ -13,7 +19,14 @@ FILE	*ouvrirFichier(const char *nomFichier)
 }
 
 
-/*lit le fichier, rempli g->taille. Retourne 1 si pas d'erreur, 0 sinon*/
+
+/*
+Fonction	: lectureTaille()
+Auteur		: Patata_Games
+Param		: f est un fichier déjà ouvert ; g est une grille de type Grille (cf. proto.h)
+Traitement	: Lit la taille de la grille depuis le fichier et vérifie qu'elle respecte les bornes (entre 5 et N)
+Retour		: Retourne 1 si la lecture et la validation réussissent, 0 sinon
+*/
 int	lectureTaille(FILE *f, Grille *g)
 {
 	if (fscanf(f, "%d", &g->taille) != 1)
@@ -31,7 +44,14 @@ int	lectureTaille(FILE *f, Grille *g)
 }
 
 
-/*Lit le fichier. Rempli g->regions avec chaque case. Met chaque case à l'état VIDE.*/
+
+/*
+Fonction	: lectureGrille
+Auteur		: Patata_Games
+Param		: f est un fichier déjà ouvert ; g est une grille de type Grille (cf. proto.h)
+Traitement	: Lit la grille de régions depuis le fichier, remplit g->regions et initialise g->etat à VIDE
+Retour		: Retourne 1 si la lecture réussit, 0 sinon
+*/
 int	lectureGrille(FILE *f, Grille *g)
 {
 	for (int i=0; i<g->taille; i++)
@@ -53,9 +73,15 @@ int	lectureGrille(FILE *f, Grille *g)
 	return (1);
 }
 
-/*Ouvre un fichier grille.txt, récupère la taille 
-de grille et met la grille dans une structure.
-Utilise les fonctions définies ci-dessus pour faire tout ça.*/
+
+
+/*
+Fonction	: lireGrilleFromFichier
+Auteur		: Patata_Games
+Param		: nomFichier est le chemin du fichier de grille ; g est une grille de type Grille (cf. proto.h)
+Traitement	: Ouvre le fichier, lit la taille puis le contenu de la grille et remplit la structure g
+Retour		: Retourne 1 si tout s'est bien passé, 0 sinon
+*/
 int	lireGrilleFromFichier(const char *nomFichier, Grille *g)
 {
 	FILE	*f = ouvrirFichier(nomFichier);

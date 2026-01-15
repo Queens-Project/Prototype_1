@@ -10,34 +10,36 @@ Ce fichier contient les fonctions qui gère le système de scores du jeu :
 
 
 
+
 /*
-Affiche la liste des meilleurs scores à l'écran.
-Attend que l'utilisateur appuie sur Q pour revenir au menu.
+Fonction	: afficher_scores
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Charge et affiche le classement des meilleurs scores, permet de revenir au menu ou d'effacer tous les scores
+Retour		: NONE
 */
-void afficher_scores(void)
+void	afficher_scores(void)
 {
-    int tap;
+	int	tap;
 
-    while (1)
-    {
-        Score scores[MAX_SCORES];
-        int count = load_scores(scores);
+	while (1)
+	{
+		Score scores[MAX_SCORES];
+		int count = load_scores(scores);
 
-        clear();
+		clear();
 
-        int y = 0;
-        mvprintw(y++, 0, "=== SCORES ===");
-        y++;
+		int	y = 0;
+		mvprintw(y++, 0, "=== SCORES ===");
+		y++;
 
-        if (count == 0)
-        {
-            mvprintw(y++, 0, "(Aucun score)");
-        }
-        else
-        {
-            for (int i = 0; i < count; i++)
-            {
-                mvprintw(y++, 0,
+		if (count == 0)
+			mvprintw(y++, 0, "(Aucun score)");
+		else
+		{
+			for (int i = 0; i < count; i++)
+			{
+				mvprintw(y++, 0,
                     "%d. %-20s | %dX%d | %5d pts | %d:%02d",
                     i + 1,
                     scores[i].pseudo,
@@ -47,40 +49,38 @@ void afficher_scores(void)
                     scores[i].temps / 60,
                     scores[i].temps % 60
                 );
-            }
-        }
+			}
+		}
 
-        mvprintw(y + 2, 0, "ECHAP : revenir      * : effacer tous les scores");
-        refresh();
+		mvprintw(y + 2, 0, "ECHAP : revenir      * : effacer tous les scores");
+		refresh();
 		
-        tap = getch();
+		tap = getch();
 
-        if (tap == KEY_ESC)
-            break;
+		if (tap == KEY_ESC)
+			break;
 
-        if (tap == '*' || tap == 42)
-        {
-            clear_scores();
+		if (tap == '*' || tap == 42)
+		{
+			clear_scores();
+			mvprintw(y + 4, 0, "Scores effaces.");
+			refresh();
+			flushinp();
+		}
+	}
 
-            /* Optionnel: petit feedback */
-            mvprintw(y + 4, 0, "Scores effaces.");
-            refresh();
-
-            /* Important: évite des touches “en trop” qui trainent */
-            flushinp();
-        }
-    }
-
-    clear();
-    refresh();
+	clear();
+	refresh();
 }
 
 
 
 /*
-Charge les scores depuis le fichier "score.txt" dans le tableau fourni.
-Supporte deux formats de sauvegarde différent (et recalcule si nécessaire).
-Retourne le nombre de scores chargés.
+Fonction	: load_scores()
+Auteur		: Patata_Games
+Param		: scores est un tableau de Score à remplir (cf. proto.h)
+Traitement	: Lit le fichier "score.txt" et charge les scores en mémoire (gère deux formats et recalcule si nécessaire)
+Retour		: Retourne le nombre de scores chargés
 */
 int	load_scores(Score scores[])
 {
@@ -106,6 +106,8 @@ int	load_scores(Score scores[])
 			count++;
 		}
 		// Ancien format : rank pseudo taille min sec  (5 champs)
+		// Cet 'ancien format' est le format demandé par le cahier des charges
+		// Notre 'nouveau format' prend en charge un score calculé en points
 		else if (sscanf(line, "%d %24s %d %d %d", &rank, pseudo, &taille, &minutes, &secondes) == 5)
 		{
 			strcpy(scores[count].pseudo, pseudo);
@@ -120,9 +122,13 @@ int	load_scores(Score scores[])
 }
 
 
+
 /*
-Ajoute un score dans le tableau en mémoire.
-Utile avant un tri.
+Fonction	: add_score()
+Auteur		: Patata_Games
+Param		: scores est un tableau de Score ; count est le nombre actuel d'entrées ; pseudo est le nom du joueur ; temps est le temps réalisé (en secondes)
+Traitement	: Ajoute une entrée au tableau de scores (pseudo/temps) avant un éventuel tri
+Retour		: NONE
 */
 void	add_score(Score scores[], int *count, const char *pseudo, int temps)
 {
@@ -132,10 +138,13 @@ void	add_score(Score scores[], int *count, const char *pseudo, int temps)
 }
 
 
+
 /*
-Calcule le score final en fonction de la taille de la grille et du temps réalisé.
-Plus la grille est grande et plus le temps est faible, plus le score sera élevé.
-Utilise une fonction mathématique (accessible via le lien Géogébra transmis dans le rapport).
+Fonction	: calculer_score()
+Auteur		: Patata_Games
+Param		: taille est la taille de la grille ; temps est le temps réalisé (en secondes)
+Traitement	: Calcule un score à partir d'une formule mathématique dépendant de la taille et du temps (grille plus grande et temps plus faible => score plus élevé)
+Retour		: Retourne le score final (entier positif ou nul)
 */
 int calculer_score(int taille, int temps)
 {
@@ -153,9 +162,13 @@ int calculer_score(int taille, int temps)
 }
 
 
+
 /*
-Trie le tableau de scores par score décroissant.
-En cas d'égalité, le meilleur est celui avec le temps le plus faible.
+Fonction	: sort_scores
+Auteur		: Patata_Games
+Param		: scores est un tableau de Score ; n est le nombre d'éléments à trier
+Traitement	: Trie les scores par score décroissant ; en cas d'égalité, favorise le temps le plus faible
+Retour		: NONE
 */
 void	sort_scores(Score scores[], int n)
 {
@@ -174,9 +187,13 @@ void	sort_scores(Score scores[], int n)
 }
 
 
+
 /*
-Sauvegarde les scores dans le fichier "score.txt" au format texte.
-Ecrase le fichier existant afin de conserver un classement propre et trié.
+Fonction	: save_scores()
+Auteur		: Patata_Games
+Param		: scores est un tableau de Score ; count est le nombre d'éléments ; taille est la taille de grille (non utilisé ici)
+Traitement	: Sauvegarde le classement dans "score.txt" au format texte en écrasant le fichier existant
+Retour		: NONE
 */
 void	save_scores(Score scores[], int count, int taille)
 {
@@ -200,10 +217,14 @@ void	save_scores(Score scores[], int count, int taille)
 	fclose(f);
 }
 
+
+
 /*
-Ajoute un nouveau score (pseudo/temps/taille), recalcule le score, trie le classement
-et sauvegarde le résultat en conservant au maximum MAX_SCORES.
-Utilise les fonctions définies au-dessus pour faire ça.
+Fonction	: update_scores()
+Auteur		: Patata_Games
+Param		: pseudo est le nom du joueur ; temps est le temps réalisé (en secondes) ; taille est la taille de la grille
+Traitement	: Ajoute le nouveau score, calcule sa valeur, trie le classement, conserve au plus MAX_SCORES entrées et sauvegarde dans le fichier
+Retour		: NONE
 */
 void	update_scores(const char *pseudo, int temps, int taille)
 {
@@ -225,13 +246,13 @@ void	update_scores(const char *pseudo, int temps, int taille)
 }
 
 
+
 /*
-Lance une partie :
---> Choix de la taille
---> Sélection aléatoire d'une grille
---> Chargement de la grille
---> Execution du jeu.
-Si victoire, met à jour le classement et affiche les scores en fin de partie.
+Fonction	: lancer_partie()
+Auteur		: Patata_Games
+Param		: pseudo est le nom du joueur
+Traitement	: Lance une partie complète : choix taille, sélection aléatoire d'une grille, chargement, lancement du jeu et mise à jour des scores en cas de victoire
+Retour		: NONE
 */
 void	lancer_partie(const char *pseudo)
 {
@@ -269,9 +290,17 @@ void	lancer_partie(const char *pseudo)
 }
 
 
-void clear_scores(void)
+
+/*
+Fonction	: clear_scores()
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Efface tous les scores en réinitialisant le fichier "score.txt"
+Retour		: NONE
+*/
+void	clear_scores(void)
 {
-    FILE *f = fopen("score.txt", "w");
-    if (f != NULL)
-        fclose(f);
+	FILE	*f = fopen("score.txt", "w");
+	if (f != NULL)
+		fclose(f);
 }

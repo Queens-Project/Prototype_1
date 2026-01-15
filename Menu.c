@@ -7,9 +7,13 @@ utilisateur associées avant le lancement d’une partie.
 */
 
 
+
 /*
-Permet au joueur de choisir la taille de la grille avant de lancer une partie.
-La taille par défaut est 5*5, mais l'utilisateur peut la modifier via le clavier.
+Fonction	: choisir_taille_grille()
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Permet au joueur de sélectionner une taille de grille (entre 5 et N) via le clavier, avec une valeur par défaut
+Retour		: Retourne la taille choisie (entier)
 */
 int	choisir_taille_grille(void)
 {
@@ -56,7 +60,11 @@ int	choisir_taille_grille(void)
 
 
 /*
-Permet au joueur de choisir son pseudo avant de choisir la taille de la grille.
+Fonction	: crea_pseudo()
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Demande au joueur un pseudo au clavier, remplace les espaces par des '_' puis lance une partie
+Retour		: NONE
 */
 void	crea_pseudo()
 {
@@ -78,9 +86,13 @@ void	crea_pseudo()
 }
 
 
+
 /*
-Supprime les caractères de fin de ligne (\n ou \r\n).
-(Fonction utile suite à un problème rencontré)
+Fonction	: strip_crlf
+Auteur		: Patata_Games
+Param		: s est une chaîne de caractères modifiable
+Traitement	: Supprime les caractères de fin de ligne (\n et/ou \r) en plaçant un '\0' au premier CR/LF rencontré
+Retour		: NONE
 */
 void	strip_crlf(char *s)
 {
@@ -88,9 +100,13 @@ void	strip_crlf(char *s)
 }
 
 
+
 /*
-Affiche les règles du jeu à partir d'un fichier texte.
-L'utilisateur peut quitter l'affichage pour revenir au menu principal.
+Fonction	: regles_du_jeu
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Ouvre et affiche le fichier "regle_du_jeu.txt" dans la console avec défilement si nécessaire, puis attend ECHAP pour revenir
+Retour		: NONE
 */
 void	regles_du_jeu(void)
 {
@@ -174,10 +190,11 @@ void	regles_du_jeu(void)
 
 
 /*
-Affiche le menu principal du jeu et gère les choix de l'utilisateur :
---> Lancer une partie
---> Afficher les règles
---> Quitter le jeu
+Fonction	: menu
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Initialise ncurses, affiche le menu principal et gère les choix utilisateur (nouvelle partie, scores, règles, quitter)
+Retour		: NONE
 */
 void	menu()
 {
@@ -238,9 +255,14 @@ void	menu()
 	}
 }
 
+
+
 /*
-Le programme commence ici.
-Lance le menu principal du jeu.
+Fonction	: main()
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Point d'entrée du programme : lance le menu principal
+Retour		: Retourne 0 à la fin de l'exécution
 */
 int	main()
 {
