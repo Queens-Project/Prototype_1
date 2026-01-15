@@ -5,7 +5,13 @@
 fonctionnement de l'affichage dans la console.*/
 
 
-/* Fonction d'initialisation des couleurs.*/
+/*
+Fonction	: init_colors_cases()
+Auteur		: Patata_Games
+Param		: NONE
+Traitement	: Initialise les couleurs pour NCurses
+Retour		: NONE
+*/
 void	init_colors_cases(void)
 {
 /*Ncurses fournit 8 couleurs par défaut, i lfaut donc en créer par nous-même.
@@ -53,7 +59,13 @@ Mais il faut savoir que toutes les consoles ne peuvent pas afficher le même nom
 }
 
 
-/*Fonction d'affichage de la grille.*/
+/*
+Fonction	: afficherGrilleNcurses
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h) ; x et y définissent la position du curseur
+Traitement	: Affiche une grille en fonction de la structure g
+Retour		: NONE
+*/
 void	afficherGrilleNcurses(const Grille *g, int x, int y)
 {
 	for (int i = 0; i < g->taille; i++)
@@ -118,8 +130,14 @@ void	afficherGrilleNcurses(const Grille *g, int x, int y)
 	}
 }
 
-/*Affiche une grille toute blanche
---> on ne s'en sert que pour mettre le jeu en pause*/
+/*
+Fonction	: afficherGrilleBlanche
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h)
+Traitement	: Va chercher la taille de la grille jouée et affiche une grille blanche de la bonne taille
+			  Cette fonction est utilisée uniquement lorsque le jeu est mis en pause.
+Retour		: NONE
+*/
 void	afficherGrilleBlanche(const Grille *g)
 {
 	for (int i = 0; i < g->taille; i++)

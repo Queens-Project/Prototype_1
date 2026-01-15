@@ -4,15 +4,27 @@
 placement de reine voulu par le joueur est valide*/
 
 
-/*Vérifie que le placement donné en argument est situé 
-dans la grille (et pas en dehors des frontières)*/
+
+/*
+Fonction	: inside_grille
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour la ligne; col pour la colonne
+Traitement	: Vérifie qu'un point rentré en paramètre par ses coordonnées (line,col) se situe dans la grille
+Retour		: NONE
+*/
 int	inside_grille(Grille *g, int line, int col)
 {
 	return (g && line>=0 && col>=0 && line<g->taille && col < g->taille);
 }
 
-/*Vérifie que les 8 cases adjacentes ne contiennent 
-pas de reine. Si OK alors renvoie 1, 0 sinon.*/
+
+/*
+Fonction	: check_adjacent
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour la ligne; col pour la colonne
+Traitement	: Vérifie qu'un point (line,col) rentré en paramètre n'a pas de Reine adjacente
+Retour		: 0 si Reine adjacente, 1 sinon
+*/
 int	check_adjacent(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))
@@ -38,8 +50,14 @@ int	check_adjacent(int col, int line, Grille *g)
 }
 
 
-/*Vérifie qu'il n'y ait pas déjà une reine 
-placée dans la même région*/
+
+/*
+Fonction	: check_region
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour la ligne; col pour la colonne
+Traitement	: Vérifie qu'un point (line,col) rentré en paramètre n'a pas de reine dans sa région
+Retour		: 0 si Reine dans la région, 1 sinon
+*/
 int	check_region(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))
@@ -62,7 +80,14 @@ int	check_region(int col, int line, Grille *g)
 }
 
 
-/*Vérifie qu'il n'y a pas déjà une reine sur la même ligne.*/
+
+/*
+Fonction	: check_line
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour la ligne; col pour la colonne
+Traitement	: Vérifie qu'un point (line,col) rentré en paramètre n'a pas de Reine sur la même ligne
+Retour		: 0 si une reine sur la même ligne, 1 sinon
+*/
 int	check_line(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))
@@ -80,7 +105,14 @@ int	check_line(int col, int line, Grille *g)
 }
 
 
-/*Vérifie qu'il n'y ait pas déjà une reine sur la même colonne. */
+
+/*
+Fonction	: check_column
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour la ligne; col pour la colonne
+Traitement	: Vérifie qu'un point (line,col) rentré en paramètre n'a pas de Reine sur la même colonne
+Retour		: 0 si une reine sur la même colonne, 1 sinon
+*/
 int	check_column(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))
@@ -98,8 +130,15 @@ int	check_column(int col, int line, Grille *g)
 }
 
 
-/*Détermine si le placement de reine demandé par le joueur est valide.
-Utilise toutes les fonctions de vérifications précédentes.*/
+
+/*
+Fonction	: check_region
+Auteur		: Patata_Games
+Param		: g est une grille de type Grille (cf. proto.h); line pour la ligne; col pour la colonne
+Traitement	: Vérifie qu'une reine peut être placé sur la case de coordonnées (line,col)
+Retour		: Si le placement est possible, retourne PLACEMENT_OK
+			  Sinon, retourne l'erreur correspondante (exemple : si déjà une autre reine dans la région, retourne ERROR_REGION)
+*/
 QueenError placement_queen(int col, int line, Grille *g)
 {
 	if (!inside_grille(g, line, col))
