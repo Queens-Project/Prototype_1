@@ -141,23 +141,50 @@ Retour		: Si le placement est possible, retourne PLACEMENT_OK
 */
 QueenError placement_queen(int col, int line, Grille *g)
 {
+	QueenError err = PLACEMENT_OK;
+	int	print_error = 3;
+
 	if (!inside_grille(g, line, col))
-		return ERROR_OUT_OF_BOUNDS;
+	{
+		err = ERROR_OUT_OF_BOUNDS;
+		mvprintw(g->taille + print_error, 0, "Placement refuse: %s\n", queen_error_msg(err));
+		print_error++;
+	}
 
 	if (g->etat[line][col] == QUEEN)
-		return ERROR_OCCUPIED;
+	{
+		err = ERROR_OCCUPIED;
+		mvprintw(g->taille + print_error, 0, "Placement refuse: %s\n", queen_error_msg(err));
+		print_error++;
+	}
 
 	if (!check_adjacent(col, line, g))
-		return ERROR_ADJACENT;
+	{
+		err = ERROR_ADJACENT;
+		mvprintw(g->taille + print_error, 0, "Placement refuse: %s\n", queen_error_msg(err));
+		print_error++;
+	}
 
 	if (!check_line(col, line, g))
-		return ERROR_LINE;
+	{
+		err = ERROR_LINE;
+		mvprintw(g->taille + print_error, 0, "Placement refuse: %s\n", queen_error_msg(err));
+		print_error++;
+	}
 
 	if (!check_column(col, line, g))
-		return ERROR_COLUMN;
+	{
+		err = ERROR_COLUMN;
+		mvprintw(g->taille + print_error, 0, "Placement refuse: %s\n", queen_error_msg(err));
+		print_error++;
+	}
 
 	if (!check_region(col, line, g))
-		return ERROR_REGION;
+	{
+		err = ERROR_REGION;
+		mvprintw(g->taille + print_error, 0, "Placement refuse: %s\n", queen_error_msg(err));
+		print_error++;
+	}
 
-	return PLACEMENT_OK;
+	return err;
 }

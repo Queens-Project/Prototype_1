@@ -201,8 +201,7 @@ int	game_loop(Grille *g, time_t *debut)
 			QueenError err = placer_queen(g, line, col);
 			if (err != PLACEMENT_OK)
 			{
-				mvprintw(g->taille + 3, 0, "Placement refusé: %s\n", queen_error_msg(err));
-				mvprintw(g->taille + 4, 0, "Appuie sur une touche...\n");
+				mvprintw(g->taille + 7, 0, "Appuie sur une touche...\n");
 				refresh();
 				getch();
 			}
